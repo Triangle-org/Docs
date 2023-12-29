@@ -115,6 +115,9 @@ function NavigationGroup({ group, className }) {
     isInsideMobileNavigation
   )
 
+  // console.log(router.asPath);
+  // console.log(router.pathname);
+
   let isActiveGroup =
     group.links.findIndex((link) => link.href === router.pathname) !== -1
 
@@ -167,7 +170,8 @@ function NavigationGroup({ group, className }) {
                           href={`${link.href}#${section.id}`}
                           tag={section.tag}
                           isAnchorLink
-                        >
+                          active={router.asPath === `${link.href}#${section.id}`}
+                          >
                           {section.title}
                         </NavLink>
                       </li>
@@ -189,30 +193,50 @@ export const navigation = [
     links: [
       { title: 'Главная', href: '/' },
       { title: 'Предупреждение', href: '/attention' },
+      { title: 'Установка', href: '/install' },
+      { title: 'Структура', href: '/directory' },
+      { title: 'Консольные команды', href: '/console' },
     ],
   },
   {
-    title: 'Guides',
+    title: 'Основные инструменты',
     links: [
-      { title: 'Introduction', href: '/' },
-      { title: 'Quickstart', href: '/quickstart' },
-      { title: 'SDKs', href: '/sdks' },
-      { title: 'Authentication', href: '/authentication' },
-      { title: 'Pagination', href: '/pagination' },
-      { title: 'Errors', href: '/errors' },
-      { title: 'Webhooks', href: '/webhooks' },
+      { title: 'HTTP Запрос', href: '/request' },
+      { title: 'HTTP Ответ', href: '/response' },
+      { title: 'Контроллер', href: '/controller' },
+      { title: 'Маршрутизатор', href: '/router' },
+      { title: 'Промежуточное ПО', href: '/middleware' },
+      { title: 'Представление', href: '/view' },
+      { title: 'Статические файлы', href: '/static' },
+      { title: 'Сессии', href: '/sessions' },
+      { title: 'Обработка исключений', href: '/exceptions' },
+      { title: 'Журналы', href: '/logs' },
+      { title: 'Конфигурация', href: '/config' },
+      { title: 'Мультиприложение', href: '/multiapp' },
     ],
   },
-  {
-    title: 'Resources',
-    links: [
-      { title: 'Contacts', href: '/contacts' },
-      { title: 'Conversations', href: '/conversations' },
-      { title: 'Messages', href: '/messages' },
-      { title: 'Groups', href: '/groups' },
-      { title: 'Attachments', href: '/attachments' },
-    ],
-  },
+  // {
+  //   title: 'Guides',
+  //   links: [
+  //     { title: 'Introduction', href: '/' },
+  //     { title: 'Quickstart', href: '/quickstart' },
+  //     { title: 'SDKs', href: '/sdks' },
+  //     { title: 'Authentication', href: '/authentication' },
+  //     { title: 'Pagination', href: '/pagination' },
+  //     { title: 'Errors', href: '/errors' },
+  //     { title: 'Webhooks', href: '/webhooks' },
+  //   ],
+  // },
+  // {
+  //   title: 'Resources',
+  //   links: [
+  //     { title: 'Contacts', href: '/contacts' },
+  //     { title: 'Conversations', href: '/conversations' },
+  //     { title: 'Messages', href: '/messages' },
+  //     { title: 'Groups', href: '/groups' },
+  //     { title: 'Attachments', href: '/attachments' },
+  //   ],
+  // },
 ]
 
 export function Navigation(props) {

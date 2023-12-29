@@ -1,0 +1,27 @@
+export const title = "Установка";
+// export const description = "";
+
+## Системные требования
+- PHP >= `8.2`
+- Расширения PHP: `ext-curl`, `ext-json`, `ext-intl`, `ext-posix`, `ext-mbstring`, `ext-zend-opcache`
+- Composer >= `2.0`
+
+## Установка через Composer
+
+```bash {{ title: '1. Создайте проект' }}
+composer create-project triangle/web
+```
+
+<Note>
+  Помните, что при выполнении `composer create-project ...` создаётся папка с конечным названием проекта.
+  В данном случае это папка `web`
+</Note>
+
+```bash {{ title: '2. Перейдите в директорию с проектом и выполните команду запуска' }}
+cd ./web
+php master start
+```
+
+По умолчанию проект запускается на порту `88` и доступен по адресу `http://localhost:88`. Также проект можно 
+запустить с флагом ` -d`, такая команда выполнит запуск в фоновом режиме. Все команды доступны в разделе [Консольные команды](/console).
+

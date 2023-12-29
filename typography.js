@@ -39,7 +39,7 @@ module.exports = ({ theme }) => ({
 
       // Base
       color: 'var(--tw-prose-body)',
-      fontSize: theme('fontSize.sm')[0],
+      fontSize: theme('fontSize.base')[0],
       lineHeight: theme('lineHeight.7'),
 
       // Layout
@@ -313,11 +313,11 @@ module.exports = ({ theme }) => ({
         color: 'inherit',
       },
       'h2 code': {
-        fontSize: theme('fontSize.base')[0],
+        fontSize: theme('fontSize.lg')[0],
         fontWeight: 'inherit',
       },
       'h3 code': {
-        fontSize: theme('fontSize.sm')[0],
+        fontSize: theme('fontSize.base')[0],
         fontWeight: 'inherit',
       },
 

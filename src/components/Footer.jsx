@@ -147,12 +147,12 @@ function PageNavigation() {
     <div className="flex">
       {previousPage && (
         <div className="flex flex-col items-start gap-3">
-          <PageLink label="Previous" page={previousPage} previous />
+          <PageLink label="Назад" page={previousPage} previous />
         </div>
       )}
       {nextPage && (
         <div className="ml-auto flex flex-col items-end gap-3">
-          <PageLink label="Next" page={nextPage} />
+          <PageLink label="Далее" page={nextPage} />
         </div>
       )}
     </div>
@@ -219,7 +219,7 @@ export function Footer() {
   return (
     <footer className="mx-auto max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
       <Feedback key={router.pathname} />
-      <PageNavigation />
+      {/* <PageNavigation /> */}
       <SmallPrint />
     </footer>
   )
