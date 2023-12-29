@@ -8,7 +8,6 @@ To get started with this documentation, first install the npm dependencies:
 
 ```bash
 npm install
-cp .env.example .env.local
 ```
 
 Next, run the development server:
