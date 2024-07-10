@@ -1,5 +1,5 @@
 export const description =
-  'On this page, we’ll dive into the different conversation endpoints you can use to manage conversations programmatically.'
+    'On this page, we’ll dive into the different conversation endpoints you can use to manage conversations programmatically.'
 
 # Conversations
 
@@ -12,37 +12,37 @@ The conversation model contains all the information about the conversations betw
 ### Properties
 
 <Properties>
-  <Property name="id" type="string">
-    Unique identifier for the conversation.
-  </Property>
-  <Property name="contact_id" type="string">
-    Unique identifier for the other contact in the conversation.
-  </Property>
-  <Property name="group_id" type="string">
-    Unique identifier for the group that the conversation belongs to.
-  </Property>
-  <Property name="pinned_message_id" type="string">
-    Unique identifier for the pinned message.
-  </Property>
-  <Property name="is_pinned" type="boolean">
-    Whether or not the conversation has been pinned.
-  </Property>
-  <Property name="is_muted" type="boolean">
-    Whether or not the conversation has been muted.
-  </Property>
-  <Property name="last_active_at" type="timestamp">
-    Timestamp of when the conversation was last active.
-  </Property>
-  <Property name="last_opened_at" type="timestamp">
-    Timestamp of when the conversation was last opened by the authenticated
-    user.
-  </Property>
-  <Property name="created_at" type="timestamp">
-    Timestamp of when the conversation was created.
-  </Property>
-  <Property name="archived_at" type="timestamp">
-    Timestamp of when the conversation was archived.
-  </Property>
+    <Property name="id" type="string">
+        Unique identifier for the conversation.
+    </Property>
+    <Property name="contact_id" type="string">
+        Unique identifier for the other contact in the conversation.
+    </Property>
+    <Property name="group_id" type="string">
+        Unique identifier for the group that the conversation belongs to.
+    </Property>
+    <Property name="pinned_message_id" type="string">
+        Unique identifier for the pinned message.
+    </Property>
+    <Property name="is_pinned" type="boolean">
+        Whether or not the conversation has been pinned.
+    </Property>
+    <Property name="is_muted" type="boolean">
+        Whether or not the conversation has been muted.
+    </Property>
+    <Property name="last_active_at" type="timestamp">
+        Timestamp of when the conversation was last active.
+    </Property>
+    <Property name="last_opened_at" type="timestamp">
+        Timestamp of when the conversation was last opened by the authenticated
+        user.
+    </Property>
+    <Property name="created_at" type="timestamp">
+        Timestamp of when the conversation was created.
+    </Property>
+    <Property name="archived_at" type="timestamp">
+        Timestamp of when the conversation was archived.
+    </Property>
 </Properties>
 
 ---
@@ -50,90 +50,91 @@ The conversation model contains all the information about the conversations betw
 ## List all conversations {{ tag: 'GET', label: '/v1/conversations' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve a paginated list of all your conversations. By default, a maximum of ten conversations are shown per page.
+        This endpoint allows you to retrieve a paginated list of all your conversations. By default, a maximum of ten
+        conversations are shown per page.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="limit" type="integer">
-        Limit the number of conversations returned.
-      </Property>
-      <Property name="muted" type="boolean">
-        Only show conversations that are muted when set to `true`.
-      </Property>
-      <Property name="archived" type="boolean">
-        Only show conversations that are archived when set to `true`.
-      </Property>
-      <Property name="pinned" type="boolean">
-        Only show conversations that are pinned when set to `true`.
-      </Property>
-      <Property name="group_id" type="string">
-        Only show conversations for the specified group.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="limit" type="integer">
+                Limit the number of conversations returned.
+            </Property>
+            <Property name="muted" type="boolean">
+                Only show conversations that are muted when set to `true`.
+            </Property>
+            <Property name="archived" type="boolean">
+                Only show conversations that are archived when set to `true`.
+            </Property>
+            <Property name="pinned" type="boolean">
+                Only show conversations that are pinned when set to `true`.
+            </Property>
+            <Property name="group_id" type="string">
+                Only show conversations for the specified group.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/conversations">
+        <CodeGroup title="Request" tag="GET" label="/v1/conversations">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G https://api.protocol.chat/v1/conversations \
-      -H "Authorization: Bearer {token}" \
-      -d limit=10
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -G https://api.protocol.chat/v1/conversations \
+            -H "Authorization: Bearer {token}" \
+            -d limit=10
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.conversations.list()
-    ```
+            await client.conversations.list()
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.conversations.list()
-    ```
+            client.conversations.list()
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->conversations->list();
-    ```
+            $client->conversations->list();
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "has_more": false,
-      "data": [
+        ```json {{title: 'Response'}}
         {
-          "id": "xgQQXg3hrtjh7AvZ",
-          "contact_id": "WAz8eIbvDR60rouK",
-          "group_id": null,
-          "pinned_message_id": null,
-          "is_pinned": false,
-          "is_muted": false,
-          "last_active_at": 705103200,
-          "last_opened_at": 705103200,
-          "created_at": 692233200,
-          "archived_at": null
+            "has_more": false,
+            "data": [
+        {
+            "id": "xgQQXg3hrtjh7AvZ",
+            "contact_id": "WAz8eIbvDR60rouK",
+            "group_id": null,
+            "pinned_message_id": null,
+            "is_pinned": false,
+            "is_muted": false,
+            "last_active_at": 705103200,
+            "last_opened_at": 705103200,
+            "created_at": 692233200,
+            "archived_at": null
         },
         {
-          "id": "hSIhXBhNe8X1d8Et"
-          // ...
+            "id": "hSIhXBhNe8X1d8Et"
+            // ...
         }
-      ]
-    }
-    ```
+            ]
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -141,76 +142,77 @@ The conversation model contains all the information about the conversations betw
 ## Create a conversation {{ tag: 'POST', label: '/v1/conversations' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to add a new conversation between you and a contact or group. A contact or group id is required to create a conversation.
+        This endpoint allows you to add a new conversation between you and a contact or group. A contact or group id is
+        required to create a conversation.
 
-    ### Required attributes
+        ### Required attributes
 
-    <Properties>
-      <Property name="contact_id" type="string">
-        Unique identifier for the other contact in the conversation.
-      </Property>
-      <Property name="group_id" type="string">
-        Unique identifier for the group that the conversation belongs to.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="contact_id" type="string">
+                Unique identifier for the other contact in the conversation.
+            </Property>
+            <Property name="group_id" type="string">
+                Unique identifier for the group that the conversation belongs to.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/conversations">
+        <CodeGroup title="Request" tag="POST" label="/v1/conversations">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/conversations \
-      -H "Authorization: Bearer {token}" \
-      -d 'contact_id'="WAz8eIbvDR60rouK"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/conversations \
+            -H "Authorization: Bearer {token}" \
+            -d 'contact_id'="WAz8eIbvDR60rouK"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.conversations.create({
-      contact_id: 'WAz8eIbvDR60rouK',
-    })
-    ```
+            await client.conversations.create({
+            contact_id: 'WAz8eIbvDR60rouK',
+        })
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.conversations.create(contact_id="WAz8eIbvDR60rouK")
-    ```
+            client.conversations.create(contact_id="WAz8eIbvDR60rouK")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->conversations->create([
-      'contact_id' => 'WAz8eIbvDR60rouK',
-    ]);
-    ```
+            $client->conversations->create([
+            'contact_id' => 'WAz8eIbvDR60rouK',
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "xgQQXg3hrtjh7AvZ",
-      "contact_id": "WAz8eIbvDR60rouK",
-      "group_id": null,
-      "pinned_message_id": null,
-      "is_pinned": false,
-      "is_muted": false,
-      "last_active_at": null,
-      "last_opened_at": null,
-      "created_at": 692233200,
-      "archived_at": null
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "xgQQXg3hrtjh7AvZ",
+            "contact_id": "WAz8eIbvDR60rouK",
+            "group_id": null,
+            "pinned_message_id": null,
+            "is_pinned": false,
+            "is_muted": false,
+            "last_active_at": null,
+            "last_opened_at": null,
+            "created_at": 692233200,
+            "archived_at": null
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -218,60 +220,62 @@ The conversation model contains all the information about the conversations betw
 ## Retrieve a conversation {{ tag: 'GET', label: '/v1/conversations/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve a conversation by providing the conversation id. Refer to [the list](#the-conversation-model) at the top of this page to see which properties are included with conversation objects.
+        This endpoint allows you to retrieve a conversation by providing the conversation id. Refer to [the
+        list](#the-conversation-model) at the top of this page to see which properties are included with conversation
+        objects.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
+        <CodeGroup title="Request" tag="GET" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.conversations.get('xgQQXg3hrtjh7AvZ')
-    ```
+            await client.conversations.get('xgQQXg3hrtjh7AvZ')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.conversations.get("xgQQXg3hrtjh7AvZ")
-    ```
+            client.conversations.get("xgQQXg3hrtjh7AvZ")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->conversations->get('xgQQXg3hrtjh7AvZ');
-    ```
+            $client->conversations->get('xgQQXg3hrtjh7AvZ');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "xgQQXg3hrtjh7AvZ",
-      "contact_id": "WAz8eIbvDR60rouK",
-      "group_id": null,
-      "pinned_message_id": null,
-      "is_pinned": false,
-      "is_muted": false,
-      "last_active_at": 705103200,
-      "last_opened_at": 705103200,
-      "created_at": 692233200,
-      "archived_at": null
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "xgQQXg3hrtjh7AvZ",
+            "contact_id": "WAz8eIbvDR60rouK",
+            "group_id": null,
+            "pinned_message_id": null,
+            "is_pinned": false,
+            "is_muted": false,
+            "last_active_at": 705103200,
+            "last_opened_at": 705103200,
+            "created_at": 692233200,
+            "archived_at": null
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -279,82 +283,83 @@ The conversation model contains all the information about the conversations betw
 ## Update a conversation {{ tag: 'PUT', label: '/v1/conversations/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to perform an update on a conversation. Examples of updates are pinning a message, muting or archiving the conversation, or pinning the conversation itself.
+        This endpoint allows you to perform an update on a conversation. Examples of updates are pinning a message,
+        muting or archiving the conversation, or pinning the conversation itself.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="pinned_message_id" type="string">
-        Unique identifier for the pinned message.
-      </Property>
-      <Property name="is_pinned" type="boolean">
-        Whether or not the conversation has been pinned.
-      </Property>
-      <Property name="is_muted" type="boolean">
-        Whether or not the conversation has been muted.
-      </Property>
-      <Property name="archived_at" type="timestamp">
-        Timestamp of when the conversation was archived.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="pinned_message_id" type="string">
+                Unique identifier for the pinned message.
+            </Property>
+            <Property name="is_pinned" type="boolean">
+                Whether or not the conversation has been pinned.
+            </Property>
+            <Property name="is_muted" type="boolean">
+                Whether or not the conversation has been muted.
+            </Property>
+            <Property name="archived_at" type="timestamp">
+                Timestamp of when the conversation was archived.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
+        <CodeGroup title="Request" tag="PUT" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
-      -H "Authorization: Bearer {token}" \
-      -d 'is_muted'=true
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X PUT https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
+            -H "Authorization: Bearer {token}" \
+            -d 'is_muted'=true
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.conversations.update('xgQQXg3hrtjh7AvZ', {
-        is_muted: true,
-    })
-    ```
+            await client.conversations.update('xgQQXg3hrtjh7AvZ', {
+            is_muted: true,
+        })
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.conversations.update("xgQQXg3hrtjh7AvZ", is_muted=True)
-    ```
+            client.conversations.update("xgQQXg3hrtjh7AvZ", is_muted=True)
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->conversations->update('xgQQXg3hrtjh7AvZ', [
-      'is_muted' => true,
-    ]);
-    ```
+            $client->conversations->update('xgQQXg3hrtjh7AvZ', [
+            'is_muted' => true,
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "xgQQXg3hrtjh7AvZ",
-      "contact_id": "WAz8eIbvDR60rouK",
-      "group_id": null,
-      "pinned_message_id": null,
-      "is_pinned": false,
-      "is_muted": true,
-      "last_active_at": 705103200,
-      "last_opened_at": 705103200,
-      "created_at": 692233200,
-      "archived_at": null
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "xgQQXg3hrtjh7AvZ",
+            "contact_id": "WAz8eIbvDR60rouK",
+            "group_id": null,
+            "pinned_message_id": null,
+            "is_pinned": false,
+            "is_muted": true,
+            "last_active_at": 705103200,
+            "last_opened_at": 705103200,
+            "created_at": 692233200,
+            "archived_at": null
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -362,43 +367,44 @@ The conversation model contains all the information about the conversations betw
 ## Delete a conversation {{ tag: 'DELETE', label: '/v1/conversations/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to delete your conversations in Protocol. Note: This will permanently delete the conversation and all its messages — archive it instead if you want to be able to restore it later.
+        This endpoint allows you to delete your conversations in Protocol. Note: This will permanently delete the
+        conversation and all its messages — archive it instead if you want to be able to restore it later.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
+        <CodeGroup title="Request" tag="DELETE" label="/v1/conversations/xgQQXg3hrtjh7AvZ">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X DELETE https://api.protocol.chat/v1/conversations/xgQQXg3hrtjh7AvZ \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.conversations.delete('xgQQXg3hrtjh7AvZ')
-    ```
+            await client.conversations.delete('xgQQXg3hrtjh7AvZ')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.conversations.delete("xgQQXg3hrtjh7AvZ")
-    ```
+            client.conversations.delete("xgQQXg3hrtjh7AvZ")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->conversations->delete('xgQQXg3hrtjh7AvZ');
-    ```
+            $client->conversations->delete('xgQQXg3hrtjh7AvZ');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-  </Col>
+    </Col>
 </Row>

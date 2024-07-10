@@ -1,39 +1,37 @@
-import { Guides } from '@/components/Guides'
-import { Resources } from '@/components/Resources'
-import { HeroPattern } from '@/components/HeroPattern'
+import {Guides} from '@/components/Guides'
+import {Resources} from '@/components/Resources'
+import {HeroPattern} from '@/components/HeroPattern'
 
 export const description =
-  'Learn everything there is to know about the Protocol API and integrate Protocol into your product.'
+    'Learn everything there is to know about the Protocol API and integrate Protocol into your product.'
 
 export const sections = [
-  { title: 'Guides', id: 'guides' },
-  { title: 'Resources', id: 'resources' },
+    {title: 'Guides', id: 'guides'},
+    {title: 'Resources', id: 'resources'},
 ]
 
-<HeroPattern />
+<HeroPattern/>
 
 # Triangle Web
 
 Высокопроизводительный HTTP-фреймворк, разработанный на основе [Localzet Server](https://github.com/localzet/Server). Призван заменить традиционную архитектуру PHP-FPM. Triangle можно использовать для разработки веб-сайтов, HTTP-интерфейсов или микросервисов. {{ className: 'lead' }}
 
-<div className="not-prose mb-16 mt-6 flex gap-3">
-  <Button href="/install" arrow="right" children="Начало работы" />
-  <Button href="/sdks" variant="outline" children="Плагины и дополнения" />
+<div className="mb-16 mt-6 flex gap-3">
+    <Button href="/install" arrow="right" children="Начало работы"/>
+    <Button href="/sdks" variant="outline" children="Плагины и дополнения"/>
 </div>
 
 ## Концепт проекта {{ anchor: false }}
 
 Фреймворк представляет собой рабочее окружение [Web](https://github.com/Triangle-org/Web) и библиотеку-ядро [Engine](https://github.com/Triangle-org/Engine), импортируемую через [Composer](https://packagist.org/packages/triangle/engine). Основные зависимости требуют `PHP v8.2`. {{ className: 'lead' }}
 
-<div className="not-prose">
-  <Button
+<Button
     href="/install"
     variant="text"
     arrow="right"
     children="Установка"
-  />
-</div>
+/>
 
-<Guides />
+<Guides/>
 
-<Resources />
+<Resources/>

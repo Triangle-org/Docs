@@ -61,8 +61,8 @@ module.exports = ({theme}) => ({
                 marginBottom: theme('spacing.6'),
             },
             // '[class~="lead"]': {
-            //   fontSize: theme('fontSize.base')[0],
-            //   ...theme('fontSize.base')[1],
+            //     fontSize: theme('fontSize.base')[0],
+            //     ...theme('fontSize.base')[1],
             // },
 
             // Lists
@@ -314,11 +314,11 @@ module.exports = ({theme}) => ({
                 color: 'inherit',
             },
             'h2 code': {
-                fontSize: theme('fontSize.lg')[0],
+                fontSize: theme('fontSize.base')[0],
                 fontWeight: 'inherit',
             },
             'h3 code': {
-                fontSize: theme('fontSize.base')[0],
+                fontSize: theme('fontSize.sm')[0],
                 fontWeight: 'inherit',
             },
 

@@ -1,5 +1,5 @@
 export const description =
-  'On this page, we’ll dive into the different message endpoints you can use to manage messages programmatically.'
+    'On this page, we’ll dive into the different message endpoints you can use to manage messages programmatically.'
 
 # Messages
 
@@ -12,33 +12,33 @@ The message model contains all the information about the messages and attachment
 ### Properties
 
 <Properties>
-  <Property name="id" type="string">
-    Unique identifier for the message.
-  </Property>
-  <Property name="conversation_id" type="string">
-    Unique identifier for the conversation the message belongs to.
-  </Property>
-  <Property name="contact" type="object">
-    The contact object for the contact who sent the message.
-  </Property>
-  <Property name="message" type="string">
-    The message content.
-  </Property>
-  <Property name="reactions" type="array">
-    An array of reaction objects associated with the message.
-  </Property>
-  <Property name="attachments" type="array">
-    An array of attachment objects associated with the message.
-  </Property>
-  <Property name="read_at" type="timestamp">
-    Timestamp of when the message was read.
-  </Property>
-  <Property name="created_at" type="timestamp">
-    Timestamp of when the message was created.
-  </Property>
-  <Property name="updated_at" type="timestamp">
-    Timestamp of when the message was last updated.
-  </Property>
+    <Property name="id" type="string">
+        Unique identifier for the message.
+    </Property>
+    <Property name="conversation_id" type="string">
+        Unique identifier for the conversation the message belongs to.
+    </Property>
+    <Property name="contact" type="object">
+        The contact object for the contact who sent the message.
+    </Property>
+    <Property name="message" type="string">
+        The message content.
+    </Property>
+    <Property name="reactions" type="array">
+        An array of reaction objects associated with the message.
+    </Property>
+    <Property name="attachments" type="array">
+        An array of attachment objects associated with the message.
+    </Property>
+    <Property name="read_at" type="timestamp">
+        Timestamp of when the message was read.
+    </Property>
+    <Property name="created_at" type="timestamp">
+        Timestamp of when the message was created.
+    </Property>
+    <Property name="updated_at" type="timestamp">
+        Timestamp of when the message was last updated.
+    </Property>
 </Properties>
 
 ---
@@ -46,88 +46,89 @@ The message model contains all the information about the messages and attachment
 ## List all messages {{ tag: 'GET', label: '/v1/messages' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve a paginated list of all your messages (in a conversation if a conversation id is provided). By default, a maximum of ten messages are shown per page.
+        This endpoint allows you to retrieve a paginated list of all your messages (in a conversation if a conversation
+        id is provided). By default, a maximum of ten messages are shown per page.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="conversation_id" type="string">
-        Limit to messages from a given conversation.
-      </Property>
-      <Property name="limit" type="integer">
-        Limit the number of messages returned.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="conversation_id" type="string">
+                Limit to messages from a given conversation.
+            </Property>
+            <Property name="limit" type="integer">
+                Limit the number of messages returned.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/messages">
+        <CodeGroup title="Request" tag="GET" label="/v1/messages">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G https://api.protocol.chat/v1/messages \
-      -H "Authorization: Bearer {token}" \
-      -d conversation_id=xgQQXg3hrtjh7AvZ \
-      -d limit=10
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -G https://api.protocol.chat/v1/messages \
+            -H "Authorization: Bearer {token}" \
+            -d conversation_id=xgQQXg3hrtjh7AvZ \
+            -d limit=10
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.messages.list()
-    ```
+            await client.messages.list()
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.messages.list()
-    ```
+            client.messages.list()
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->messages->list();
-    ```
+            $client->messages->list();
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "has_more": false,
-      "data": [
+        ```json {{title: 'Response'}}
         {
-          "id": "SIuAFUNKdSYHZF2w",
-          "conversation_id": "xgQQXg3hrtjh7AvZ",
-          "contact": {
+            "has_more": false,
+            "data": [
+        {
+            "id": "SIuAFUNKdSYHZF2w",
+            "conversation_id": "xgQQXg3hrtjh7AvZ",
+            "contact": {
             "id": "WAz8eIbvDR60rouK",
             "username": "KevinMcCallister",
             "phone_number": "1-800-759-3000",
             "avatar_url": "https://assets.protocol.chat/avatars/buzzboy.jpg",
             "last_active_at": 705103200,
             "created_at": 692233200
-          },
-          "message": "It’s a nice night for a neck injury.",
-          "reactions": [],
-          "attachments": [],
-          "read_at": 705103200,
-          "created_at": 692233200,
-          "updated_at": 692233200
+        },
+            "message": "It’s a nice night for a neck injury.",
+            "reactions": [],
+            "attachments": [],
+            "read_at": 705103200,
+            "created_at": 692233200,
+            "updated_at": 692233200
         },
         {
-          "id": "hSIhXBhNe8X1d8Et",
-          // ..
+            "id": "hSIhXBhNe8X1d8Et",
+            // ..
         }
-      ]
-    }
-    ```
+            ]
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -135,96 +136,96 @@ The message model contains all the information about the messages and attachment
 ## Send a message {{ tag: 'POST', label: '/v1/messages' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to send a new message to one of your conversations.
+        This endpoint allows you to send a new message to one of your conversations.
 
-    ### Required attributes
+        ### Required attributes
 
-    <Properties>
-      <Property name="conversation_id" type="string">
-        Unique identifier for the conversation the message belongs to.
-      </Property>
-      <Property name="message" type="string">
-        The message content.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="conversation_id" type="string">
+                Unique identifier for the conversation the message belongs to.
+            </Property>
+            <Property name="message" type="string">
+                The message content.
+            </Property>
+        </Properties>
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="attachments" type="array">
-        An array of attachment objects associated with the message.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="attachments" type="array">
+                An array of attachment objects associated with the message.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/messages">
+        <CodeGroup title="Request" tag="POST" label="/v1/messages">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/messages \
-      -H "Authorization: Bearer {token}" \
-      -d conversation_id="xgQQXg3hrtjh7AvZ" \
-      -d message="You’re what the French call ‘les incompetents.’"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/messages \
+            -H "Authorization: Bearer {token}" \
+            -d conversation_id="xgQQXg3hrtjh7AvZ" \
+            -d message="You’re what the French call ‘les incompetents.’"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.messages.send({
-      conversation_id: 'xgQQXg3hrtjh7AvZ',
-      message: 'You’re what the French call ‘les incompetents.’',
-    })
-    ```
+            await client.messages.send({
+            conversation_id: 'xgQQXg3hrtjh7AvZ',
+            message: 'You’re what the French call ‘les incompetents.’',
+        })
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.messages.send(
-      conversation_id="xgQQXg3hrtjh7AvZ",
-      message="You’re what the French call ‘les incompetents.’",
-    )
-    ```
+            client.messages.send(
+            conversation_id="xgQQXg3hrtjh7AvZ",
+            message="You’re what the French call ‘les incompetents.’",
+            )
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->messages->send([
-      'conversation_id' => 'xgQQXg3hrtjh7AvZ',
-      'message' => 'You’re what the French call ‘les incompetents.’',
-    ]);
-    ```
+            $client->messages->send([
+            'conversation_id' => 'xgQQXg3hrtjh7AvZ',
+            'message' => 'You’re what the French call ‘les incompetents.’',
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "gWqY86BMFRiH5o11",
-      "conversation_id": "xgQQXg3hrtjh7AvZ",
-      "contact": {
-        "id": "inEIRvzjC6YLMX3o",
-        "username": "LinnieMcCallister",
-        "phone_number": "1-800-759-3000",
-        "avatar_url": "https://assets.protocol.chat/avatars/linnie.jpg",
-        "last_active_at": 705103200,
-        "created_at": 692233200
-      },
-      "message": "You’re what the French call ‘les incompetents.’",
-      "reactions": [],
-      "attachments": [],
-      "read_at": null,
-      "created_at": 692233200,
-      "updated_at": null
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "gWqY86BMFRiH5o11",
+            "conversation_id": "xgQQXg3hrtjh7AvZ",
+            "contact": {
+            "id": "inEIRvzjC6YLMX3o",
+            "username": "LinnieMcCallister",
+            "phone_number": "1-800-759-3000",
+            "avatar_url": "https://assets.protocol.chat/avatars/linnie.jpg",
+            "last_active_at": 705103200,
+            "created_at": 692233200
+        },
+            "message": "You’re what the French call ‘les incompetents.’",
+            "reactions": [],
+            "attachments": [],
+            "read_at": null,
+            "created_at": 692233200,
+            "updated_at": null
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -232,66 +233,67 @@ The message model contains all the information about the messages and attachment
 ## Retrieve a message {{ tag: 'GET', label: '/v1/messages/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve a message by providing the message id. Refer to [the list](#the-message-model) at the top of this page to see which properties are included with message objects.
+        This endpoint allows you to retrieve a message by providing the message id. Refer to [the
+        list](#the-message-model) at the top of this page to see which properties are included with message objects.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/messages/SIuAFUNKdSYHZF2w">
+        <CodeGroup title="Request" tag="GET" label="/v1/messages/SIuAFUNKdSYHZF2w">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.messages.get('SIuAFUNKdSYHZF2w')
-    ```
+            await client.messages.get('SIuAFUNKdSYHZF2w')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.messages.get("SIuAFUNKdSYHZF2w")
-    ```
+            client.messages.get("SIuAFUNKdSYHZF2w")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->messages->get('SIuAFUNKdSYHZF2w');
-    ```
+            $client->messages->get('SIuAFUNKdSYHZF2w');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "SIuAFUNKdSYHZF2w",
-      "conversation_id": "xgQQXg3hrtjh7AvZ",
-      "contact": {
-        "id": "WAz8eIbvDR60rouK",
-        "username": "KevinMcCallister",
-        "phone_number": "1-800-759-3000",
-        "avatar_url": "https://assets.protocol.chat/avatars/kevin.jpg",
-        "last_active_at": 705103200,
-        "created_at": 692233200
-      },
-      "message": "I’m traveling with my dad. He’s at a meeting. I hate meetings.",
-      "reactions": [],
-      "attachments": [],
-      "read_at": 705103200,
-      "created_at": 692233200,
-      "updated_at": 692233200
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "SIuAFUNKdSYHZF2w",
+            "conversation_id": "xgQQXg3hrtjh7AvZ",
+            "contact": {
+            "id": "WAz8eIbvDR60rouK",
+            "username": "KevinMcCallister",
+            "phone_number": "1-800-759-3000",
+            "avatar_url": "https://assets.protocol.chat/avatars/kevin.jpg",
+            "last_active_at": 705103200,
+            "created_at": 692233200
+        },
+            "message": "I’m traveling with my dad. He’s at a meeting. I hate meetings.",
+            "reactions": [],
+            "attachments": [],
+            "read_at": 705103200,
+            "created_at": 692233200,
+            "updated_at": 692233200
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -299,96 +301,97 @@ The message model contains all the information about the messages and attachment
 ## Update a message {{ tag: 'PUT', label: '/v1/messages/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to perform an update on a message. Examples of updates are adding a reaction, editing the message, or adding an attachment.
+        This endpoint allows you to perform an update on a message. Examples of updates are adding a reaction, editing
+        the message, or adding an attachment.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="message" type="string">
-        The message content.
-      </Property>
-      <Property name="reactions" type="array">
-        An array of reaction objects associated with the message.
-      </Property>
-      <Property name="attachments" type="array">
-        An array of attachment objects associated with the message.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="message" type="string">
+                The message content.
+            </Property>
+            <Property name="reactions" type="array">
+                An array of reaction objects associated with the message.
+            </Property>
+            <Property name="attachments" type="array">
+                An array of attachment objects associated with the message.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/messages/SIuAFUNKdSYHZF2w">
+        <CodeGroup title="Request" tag="PUT" label="/v1/messages/SIuAFUNKdSYHZF2w">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
-      -H "Authorization: Bearer {token}" \
-      -d reactions[red_angry_face][]="KateMcCallister"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X PUT https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
+            -H "Authorization: Bearer {token}" \
+            -d reactions[red_angry_face][]="KateMcCallister"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.messages.update('SIuAFUNKdSYHZF2w', {
-        reactions: {
+            await client.messages.update('SIuAFUNKdSYHZF2w', {
+            reactions: {
             red_angry_face: ['KateMcCallister']
         }
-    })
-    ```
+        })
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.messages.update("SIuAFUNKdSYHZF2w",
-        reactions={"red_angry_face": ["KateMcCallister"]})
-    ```
+            client.messages.update("SIuAFUNKdSYHZF2w",
+            reactions={"red_angry_face": ["KateMcCallister"]})
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->messages->update('SIuAFUNKdSYHZF2w', [
-      'reactions' => [
-        'red_angry_face' => ['KateMcCallister'],
-      ],
-    ]);
-    ```
+            $client->messages->update('SIuAFUNKdSYHZF2w', [
+            'reactions' => [
+            'red_angry_face' => ['KateMcCallister'],
+            ],
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "SIuAFUNKdSYHZF2w",
-      "conversation_id": "xgQQXg3hrtjh7AvZ",
-      "contact": {
-        "id": "WAz8eIbvDR60rouK",
-        "username": "KevinMcCallister",
-        "phone_number": "1-800-759-3000",
-        "avatar_url": "https://assets.protocol.chat/avatars/buzzboy.jpg",
-        "last_active_at": 705103200,
-        "created_at": 692233200
-      },
-      "message": "I'm not apologizing. I'd rather kiss a toilet seat.",
-      "reactions": [
+        ```json {{title: 'Response'}}
         {
-          "red_angry_face": [
+            "id": "SIuAFUNKdSYHZF2w",
+            "conversation_id": "xgQQXg3hrtjh7AvZ",
+            "contact": {
+            "id": "WAz8eIbvDR60rouK",
+            "username": "KevinMcCallister",
+            "phone_number": "1-800-759-3000",
+            "avatar_url": "https://assets.protocol.chat/avatars/buzzboy.jpg",
+            "last_active_at": 705103200,
+            "created_at": 692233200
+        },
+            "message": "I'm not apologizing. I'd rather kiss a toilet seat.",
+            "reactions": [
+        {
+            "red_angry_face": [
             "KateMcCallister"
-          ]
+            ]
         }
-      ],
-      "attachments": [],
-      "read_at": 705103200,
-      "created_at": 692233200,
-      "updated_at": 692233200
-    }
-    ```
+            ],
+            "attachments": [],
+            "read_at": 705103200,
+            "created_at": 692233200,
+            "updated_at": 692233200
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -396,43 +399,44 @@ The message model contains all the information about the messages and attachment
 ## Delete a message {{ tag: 'DELETE', label: '/v1/messages/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to delete messages from your conversations. Note: This will permanently delete the message.
+        This endpoint allows you to delete messages from your conversations. Note: This will permanently delete the
+        message.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/messages/SIuAFUNKdSYHZF2w">
+        <CodeGroup title="Request" tag="DELETE" label="/v1/messages/SIuAFUNKdSYHZF2w">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X DELETE https://api.protocol.chat/v1/messages/SIuAFUNKdSYHZF2w \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.messages.delete('SIuAFUNKdSYHZF2w')
-    ```
+            await client.messages.delete('SIuAFUNKdSYHZF2w')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.messages.delete("SIuAFUNKdSYHZF2w")
-    ```
+            client.messages.delete("SIuAFUNKdSYHZF2w")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->messages->delete('SIuAFUNKdSYHZF2w');
-    ```
+            $client->messages->delete('SIuAFUNKdSYHZF2w');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-  </Col>
+    </Col>
 </Row>

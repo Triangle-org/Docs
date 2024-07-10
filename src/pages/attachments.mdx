@@ -1,5 +1,5 @@
 export const description =
-  'On this page, we’ll dive into the different attachment endpoints you can use to manage attachments programmatically.'
+    'On this page, we’ll dive into the different attachment endpoints you can use to manage attachments programmatically.'
 
 # Attachments
 
@@ -12,27 +12,27 @@ The attachment model contains all the information about the files you send to yo
 ### Properties
 
 <Properties>
-  <Property name="id" type="string">
-    Unique identifier for the attachment.
-  </Property>
-  <Property name="message_id" type="string">
-    Unique identifier for the message associated with the attachment.
-  </Property>
-  <Property name="filename" type="string">
-    The filename for the attachment.
-  </Property>
-  <Property name="file_url" type="string">
-    The URL for the attached file.
-  </Property>
-  <Property name="file_type" type="string">
-    The MIME type of the attached file.
-  </Property>
-  <Property name="file_size" type="integer">
-    The file size of the attachment in bytes.
-  </Property>
-  <Property name="created_at" type="timestamp">
-    Timestamp of when the attachment was created.
-  </Property>
+    <Property name="id" type="string">
+        Unique identifier for the attachment.
+    </Property>
+    <Property name="message_id" type="string">
+        Unique identifier for the message associated with the attachment.
+    </Property>
+    <Property name="filename" type="string">
+        The filename for the attachment.
+    </Property>
+    <Property name="file_url" type="string">
+        The URL for the attached file.
+    </Property>
+    <Property name="file_type" type="string">
+        The MIME type of the attached file.
+    </Property>
+    <Property name="file_size" type="integer">
+        The file size of the attachment in bytes.
+    </Property>
+    <Property name="created_at" type="timestamp">
+        Timestamp of when the attachment was created.
+    </Property>
 </Properties>
 
 ---
@@ -40,79 +40,80 @@ The attachment model contains all the information about the files you send to yo
 ## List all attachments {{ tag: 'GET', label: '/v1/attachments' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve a paginated list of all your attachments (in a conversation if a conversation id is provided). By default, a maximum of ten attachments are shown per page.
+        This endpoint allows you to retrieve a paginated list of all your attachments (in a conversation if a
+        conversation id is provided). By default, a maximum of ten attachments are shown per page.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="conversation_id" type="string">
-        Limit to attachments from a given conversation.
-      </Property>
-      <Property name="limit" type="integer">
-        Limit the number of attachments returned.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="conversation_id" type="string">
+                Limit to attachments from a given conversation.
+            </Property>
+            <Property name="limit" type="integer">
+                Limit the number of attachments returned.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/attachments">
+        <CodeGroup title="Request" tag="GET" label="/v1/attachments">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G https://api.protocol.chat/v1/attachments \
-      -H "Authorization: Bearer {token}" \
-      -d conversation_id="xgQQXg3hrtjh7AvZ" \
-      -d limit=10
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -G https://api.protocol.chat/v1/attachments \
+            -H "Authorization: Bearer {token}" \
+            -d conversation_id="xgQQXg3hrtjh7AvZ" \
+            -d limit=10
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.attachments.list()
-    ```
+            await client.attachments.list()
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.attachments.list()
-    ```
+            client.attachments.list()
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->attachments->list();
-    ```
+            $client->attachments->list();
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "has_more": false,
-      "data": [
+        ```json {{title: 'Response'}}
         {
-          "id": "Nc6yKKMpcxiiFxp6",
-          "message_id": "LoPsJaMcPBuFNjg1",
-          "filename": "Invoice_room_service__Plaza_Hotel.pdf",
-          "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
-          "file_type": "application/pdf",
-          "file_size": 21352,
-          "created_at": 692233200
+            "has_more": false,
+            "data": [
+        {
+            "id": "Nc6yKKMpcxiiFxp6",
+            "message_id": "LoPsJaMcPBuFNjg1",
+            "filename": "Invoice_room_service__Plaza_Hotel.pdf",
+            "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
+            "file_type": "application/pdf",
+            "file_size": 21352,
+            "created_at": 692233200
         },
         {
-          "id": "hSIhXBhNe8X1d8Et"
-          // ...
+            "id": "hSIhXBhNe8X1d8Et"
+            // ...
         }
-      ]
-    }
-    ```
+            ]
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -120,68 +121,69 @@ The attachment model contains all the information about the files you send to yo
 ## Create an attachment {{ tag: 'POST', label: '/v1/attachments' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to upload a new attachment to a conversation. See the code examples for how to send the file to the Protocol API.
+        This endpoint allows you to upload a new attachment to a conversation. See the code examples for how to send the
+        file to the Protocol API.
 
-    ### Required attributes
+        ### Required attributes
 
-    <Properties>
-      <Property name="file" type="string">
-        The file you want to add as an attachment.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="file" type="string">
+                The file you want to add as an attachment.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/attachments">
+        <CodeGroup title="Request" tag="POST" label="/v1/attachments">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/attachments \
-      -H "Authorization: Bearer {token}" \
-      -F file="../Invoice_room_service__Plaza_Hotel.pdf"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/attachments \
+            -H "Authorization: Bearer {token}" \
+            -F file="../Invoice_room_service__Plaza_Hotel.pdf"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.attachments.create({ file })
-    ```
+            await client.attachments.create({file})
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.attachments.create(file=file)
-    ```
+            client.attachments.create(file=file)
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->attachments->create([
-      'file' => $file,
-    ]);
-    ```
+            $client->attachments->create([
+            'file' => $file,
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "Nc6yKKMpcxiiFxp6",
-      "message_id": "LoPsJaMcPBuFNjg1",
-      "filename": "Invoice_room_service__Plaza_Hotel.pdf",
-      "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
-      "file_type": "application/pdf",
-      "file_size": 21352,
-      "created_at": 692233200
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "Nc6yKKMpcxiiFxp6",
+            "message_id": "LoPsJaMcPBuFNjg1",
+            "filename": "Invoice_room_service__Plaza_Hotel.pdf",
+            "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
+            "file_type": "application/pdf",
+            "file_size": 21352,
+            "created_at": 692233200
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -189,57 +191,59 @@ The attachment model contains all the information about the files you send to yo
 ## Retrieve an attachment {{ tag: 'GET', label: '/v1/attachments/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to retrieve an attachment by providing the attachment id. Refer to [the list](#the-attachment-model) at the top of this page to see which properties are included with attachment objects.
+        This endpoint allows you to retrieve an attachment by providing the attachment id. Refer to [the
+        list](#the-attachment-model) at the top of this page to see which properties are included with attachment
+        objects.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
+        <CodeGroup title="Request" tag="GET" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
 
-    ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.attachments.get('Nc6yKKMpcxiiFxp6')
-    ```
+            await client.attachments.get('Nc6yKKMpcxiiFxp6')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.attachments.get("Nc6yKKMpcxiiFxp6")
-    ```
+            client.attachments.get("Nc6yKKMpcxiiFxp6")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->attachments->get('Nc6yKKMpcxiiFxp6');
-    ```
+            $client->attachments->get('Nc6yKKMpcxiiFxp6');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "Nc6yKKMpcxiiFxp6",
-      "message_id": "LoPsJaMcPBuFNjg1",
-      "filename": "Invoice_room_service__Plaza_Hotel.pdf",
-      "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
-      "file_type": "application/pdf",
-      "file_size": 21352,
-      "created_at": 692233200
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "Nc6yKKMpcxiiFxp6",
+            "message_id": "LoPsJaMcPBuFNjg1",
+            "filename": "Invoice_room_service__Plaza_Hotel.pdf",
+            "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel.pdf",
+            "file_type": "application/pdf",
+            "file_size": 21352,
+            "created_at": 692233200
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -247,70 +251,71 @@ The attachment model contains all the information about the files you send to yo
 ## Update an attachment {{ tag: 'PUT', label: '/v1/attachments/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to perform an update on an attachment. Currently, the only supported type of update is changing the filename.
+        This endpoint allows you to perform an update on an attachment. Currently, the only supported type of update is
+        changing the filename.
 
-    ### Optional attributes
+        ### Optional attributes
 
-    <Properties>
-      <Property name="filename" type="string">
-        The new filename for the attachment.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="filename" type="string">
+                The new filename for the attachment.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
+        <CodeGroup title="Request" tag="PUT" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
-      -H "Authorization: Bearer {token}" \
-      -d filename="Invoice_room_service__Plaza_Hotel_updated.pdf"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X PUT https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
+            -H "Authorization: Bearer {token}" \
+            -d filename="Invoice_room_service__Plaza_Hotel_updated.pdf"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.attachments.update('Nc6yKKMpcxiiFxp6', {
-      filename: 'Invoice_room_service__Plaza_Hotel_updated.pdf',
-    })
-    ```
+            await client.attachments.update('Nc6yKKMpcxiiFxp6', {
+            filename: 'Invoice_room_service__Plaza_Hotel_updated.pdf',
+        })
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.attachments.update("Nc6yKKMpcxiiFxp6", filename="Invoice_room_service__Plaza_Hotel_updated.pdf")
-    ```
+            client.attachments.update("Nc6yKKMpcxiiFxp6", filename="Invoice_room_service__Plaza_Hotel_updated.pdf")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->attachments->update('Nc6yKKMpcxiiFxp6', [
-      'filename' => 'Invoice_room_service__Plaza_Hotel_updated.pdf',
-    ]);
-    ```
+            $client->attachments->update('Nc6yKKMpcxiiFxp6', [
+            'filename' => 'Invoice_room_service__Plaza_Hotel_updated.pdf',
+            ]);
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-    ```json {{ title: 'Response' }}
-    {
-      "id": "Nc6yKKMpcxiiFxp6",
-      "message_id": "LoPsJaMcPBuFNjg1",
-      "filename": "Invoice_room_service__Plaza_Hotel.pdf",
-      "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel_updated.pdf",
-      "file_type": "application/pdf",
-      "file_size": 21352,
-      "created_at": 692233200
-    }
-    ```
+        ```json {{title: 'Response'}}
+        {
+            "id": "Nc6yKKMpcxiiFxp6",
+            "message_id": "LoPsJaMcPBuFNjg1",
+            "filename": "Invoice_room_service__Plaza_Hotel.pdf",
+            "file_url": "https://assets.protocol.chat/attachments/Invoice_room_service__Plaza_Hotel_updated.pdf",
+            "file_type": "application/pdf",
+            "file_size": 21352,
+            "created_at": 692233200
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -318,43 +323,43 @@ The attachment model contains all the information about the files you send to yo
 ## Delete an attachment {{ tag: 'DELETE', label: '/v1/attachments/:id' }}
 
 <Row>
-  <Col>
+    <Col>
 
-    This endpoint allows you to delete attachments. Note: This will permanently delete the file.
+        This endpoint allows you to delete attachments. Note: This will permanently delete the file.
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
+        <CodeGroup title="Request" tag="DELETE" label="/v1/attachments/Nc6yKKMpcxiiFxp6">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
-      -H "Authorization: Bearer {token}"
-    ```
+            ```bash {{title: 'cURL'}}
+            curl -X DELETE https://api.protocol.chat/v1/attachments/Nc6yKKMpcxiiFxp6 \
+            -H "Authorization: Bearer {token}"
+            ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+            ```js
+            import ApiClient from '@example/protocol-api'
 
-    const client = new ApiClient(token)
+            const client = new ApiClient(token)
 
-    await client.attachments.delete('Nc6yKKMpcxiiFxp6')
-    ```
+            await client.attachments.delete('Nc6yKKMpcxiiFxp6')
+            ```
 
-    ```python
-    from protocol_api import ApiClient
+            ```python
+            from protocol_api import ApiClient
 
-    client = ApiClient(token)
+            client = ApiClient(token)
 
-    client.attachments.delete("Nc6yKKMpcxiiFxp6")
-    ```
+            client.attachments.delete("Nc6yKKMpcxiiFxp6")
+            ```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+            ```php
+            $client = new \Protocol\ApiClient($token);
 
-    $client->attachments->delete('Nc6yKKMpcxiiFxp6');
-    ```
+            $client->attachments->delete('Nc6yKKMpcxiiFxp6');
+            ```
 
-    </CodeGroup>
+        </CodeGroup>
 
-  </Col>
+    </Col>
 </Row>
