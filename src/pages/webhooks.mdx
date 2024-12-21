@@ -1,5 +1,5 @@
 export const description =
-  'In this guide, we will look at how to register and consume webhooks to integrate your app with Protocol.'
+    'In this guide, we will look at how to register and consume webhooks to integrate your app with Protocol.'
 
 # Webhooks
 
@@ -28,99 +28,97 @@ When your app receives a webhook request from Protocol, check the `type` attribu
 
 In the example above, a conversation was `updated`, and the payload type is a `conversation`.
 
-<div className="not-prose">
-  <Button
+<Button
     href="#event-types"
     variant="text"
     arrow="right"
     children="See all event types"
-  />
-</div>
+/>
 
 ---
 
 ## Event types
 
 <Row>
-  <Col>
+    <Col>
 
-    <Properties>
-      <Property name="contact.created">
-        A new contact was created.
-      </Property>
-      <Property name="contact.updated">
-        An existing contact was updated.
-      </Property>
-      <Property name="contact.deleted">
-        A contact was successfully deleted.
-      </Property>
-      <Property name="conversation.created">
-        A new conversation was created.
-      </Property>
-      <Property name="conversation.updated">
-        An existing conversation was updated.
-      </Property>
-      <Property name="conversation.deleted">
-        A conversation was successfully deleted.
-      </Property>
-      <Property name="message.created">
-        A new message was created.
-      </Property>
-      <Property name="message.updated">
-        An existing message was updated.
-      </Property>
-      <Property name="message.deleted">
-        A message was successfully deleted.
-      </Property>
-      <Property name="group.created">
-        A new group was created.
-      </Property>
-      <Property name="group.updated">
-        An existing group was updated.
-      </Property>
-      <Property name="group.deleted">
-        A group was successfully deleted.
-      </Property>
-      <Property name="attachment.created">
-        A new attachment was created.
-      </Property>
-      <Property name="attachment.updated">
-        An existing attachment was updated.
-      </Property>
-      <Property name="attachment.deleted">
-        An attachment was successfully deleted.
-      </Property>
-    </Properties>
+        <Properties>
+            <Property name="contact.created">
+                A new contact was created.
+            </Property>
+            <Property name="contact.updated">
+                An existing contact was updated.
+            </Property>
+            <Property name="contact.deleted">
+                A contact was successfully deleted.
+            </Property>
+            <Property name="conversation.created">
+                A new conversation was created.
+            </Property>
+            <Property name="conversation.updated">
+                An existing conversation was updated.
+            </Property>
+            <Property name="conversation.deleted">
+                A conversation was successfully deleted.
+            </Property>
+            <Property name="message.created">
+                A new message was created.
+            </Property>
+            <Property name="message.updated">
+                An existing message was updated.
+            </Property>
+            <Property name="message.deleted">
+                A message was successfully deleted.
+            </Property>
+            <Property name="group.created">
+                A new group was created.
+            </Property>
+            <Property name="group.updated">
+                An existing group was updated.
+            </Property>
+            <Property name="group.deleted">
+                A group was successfully deleted.
+            </Property>
+            <Property name="attachment.created">
+                A new attachment was created.
+            </Property>
+            <Property name="attachment.updated">
+                An existing attachment was updated.
+            </Property>
+            <Property name="attachment.deleted">
+                An attachment was successfully deleted.
+            </Property>
+        </Properties>
 
-  </Col>
-  <Col sticky>
+    </Col>
+    <Col sticky>
 
-    ```json {{ 'title': 'Example payload' }}
-    {
-      "id": "a056V7R7NmNRjl70",
-      "type": "message.updated",
-      "payload": {
-        "id": "SIuAFUNKdSYHZF2w",
-        "conversation_id": "xgQQXg3hrtjh7AvZ",
-        "contact": {
-          "id": "WAz8eIbvDR60rouK",
-          "username": "KevinMcCallister",
-          "phone_number": "1-800-759-3000",
-          "avatar_url": "https://assets.protocol.chat/avatars/kevin.jpg",
-          "last_active_at": 705103200,
-          "created_at": 692233200
+        ```json {{'title': 'Example payload'}}
+        {
+            "id": "a056V7R7NmNRjl70",
+            "type": "message.updated",
+            "payload": {
+            "id": "SIuAFUNKdSYHZF2w",
+            "conversation_id": "xgQQXg3hrtjh7AvZ",
+            "contact": {
+            "id": "WAz8eIbvDR60rouK",
+            "username": "KevinMcCallister",
+            "phone_number": "1-800-759-3000",
+            "avatar_url": "https://assets.protocol.chat/avatars/kevin.jpg",
+            "last_active_at": 705103200,
+            "created_at": 692233200
         },
-        "message": "I’m traveling with my dad. He’s at a meeting. I hate meetings.",
-        "reactions": [],
-        "attachments": [],
-        "read_at": 705103200,
-        "created_at": 692233200,
-        "updated_at": 692233200
-      }
-    }
-    ```
+            "message": "I’m traveling with my dad. He’s at a meeting. I hate meetings.",
+            "reactions": [],
+            "attachments": [],
+            "read_at": 705103200,
+            "created_at": 692233200,
+            "updated_at": 692233200
+        }
+        }
+        ```
 
-  </Col>
+    </Col>
 </Row>
 
 ---
@@ -131,41 +129,41 @@ To know for sure that a webhook was, in fact, sent by Protocol instead of a mali
 
 <CodeGroup title="Verifying a request">
 
-```js
-const signature = req.headers['x-protocol-signature']
-const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+    ```js
+    const signature = req.headers['x-protocol-signature']
+    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex')
 
-if (hash === signature) {
-  // Request is verified
+    if (hash === signature) {
+    // Request is verified
 } else {
-  // Request could not be verified
+    // Request could not be verified
 }
-```
+    ```
 
-```python
-from flask import request
-import hashlib
-import hmac
+    ```python
+    from flask import request
+    import hashlib
+    import hmac
 
-signature = request.headers.get("x-protocol-signature")
-hash = hmac.new(bytes(secret, "ascii"), bytes(payload, "ascii"), hashlib.sha256)
+    signature = request.headers.get("x-protocol-signature")
+    hash = hmac.new(bytes(secret, "ascii"), bytes(payload, "ascii"), hashlib.sha256)
 
-if hash.hexdigest() == signature:
+    if hash.hexdigest() == signature:
     # Request is verified
-else:
+    else:
     # Request could not be verified
-```
+    ```
 
-```php
-$signature = $request['headers']['x-protocol-signature'];
-$hash = hash_hmac('sha256', $payload, $secret);
+    ```php
+    $signature = $request['headers']['x-protocol-signature'];
+    $hash = hash_hmac('sha256', $payload, $secret);
 
-if (hash_equals($hash, $signature)) {
-  // Request is verified
+    if (hash_equals($hash, $signature)) {
+    // Request is verified
 } else {
-  // Request could not be verified
+    // Request could not be verified
 }
-```
+    ```
 
 </CodeGroup>
 

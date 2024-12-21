@@ -1,24 +1,25 @@
 import nextMDX from '@next/mdx'
-import { remarkPlugins } from './mdx/remark.mjs'
-import { rehypePlugins } from './mdx/rehype.mjs'
-import { recmaPlugins } from './mdx/recma.mjs'
+import withSearch from './src/mdx/search.mjs'
+import {remarkPlugins} from './src/mdx/remark.mjs'
+import {rehypePlugins} from './src/mdx/rehype.mjs'
+import {recmaPlugins} from './src/mdx/recma.mjs'
 
 const withMDX = nextMDX({
-  options: {
-    remarkPlugins,
-    rehypePlugins,
-    recmaPlugins,
-    providerImportSource: '@mdx-js/react',
-  },
+    options: {
+        remarkPlugins,
+        rehypePlugins,
+        recmaPlugins,
+        providerImportSource: '@mdx-js/react',
+    },
 })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
-  experimental: {
-    scrollRestoration: true,
-  },
+    reactStrictMode: true,
+    pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
+    experimental: {
+        scrollRestoration: true,
+    },
 }
 
-export default withMDX(nextConfig)
+export default withSearch(withMDX(nextConfig))
