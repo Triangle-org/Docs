@@ -28,14 +28,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: Docs/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: ./Docs
+        working-directory: ./
         run: npm ci
 
       - name: Build
-        working-directory: ./Docs
+        working-directory: ./
         run: npm run build
 
       - name: Setup Pages
@@ -44,7 +44,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './Docs/out'
+          path: './out'
 
   deploy:
     environment:
