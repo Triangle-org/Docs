@@ -62,23 +62,50 @@ class Welcome
 
 ## Определение маршрута
 
+**Важно:** Файл `config/route.php` — это не конфигурационный файл с `return`, а выполняемый PHP-код!
+
 Обновите `config/route.php`:
 
 ```php
-use Triangle\Router\Route;
+<?php
+// config/route.php
 
-return [
-    Route::get('/', [\App\Controller\Welcome::class, 'index']),
-];
+use Triangle\Router;
+
+// Использование автоматической маршрутизации
+// Контроллер Welcome доступен по адресу /welcome/index
+
+// Или явно задать маршрут
+Router::get('/', [\App\Controller\Welcome::class, 'index']);
+```
+
+## Альтернатива: Closure-маршрут
+
+Вы также можете использовать анонимные функции:
+
+```php
+<?php
+// config/route.php
+
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
+
+Router::get('/', function (Request $request): Response {
+    return response('Hello, Triangle!');
+});
 ```
 
 ## Работа с базой данных
 
 ### Настройка подключения
 
-Обновите `config/database.php`:
+Обновите `config/database.php` (это конфигурационный файл с `return`):
 
 ```php
+<?php
+// config/database.php
+
 return [
     'default' => 'mysql',
     'connections' => [
@@ -132,47 +159,42 @@ class UserController
 
 ## API-эндпоинт
 
-Создайте простой API:
+Создайте простой API в `config/route.php`:
 
 ```php
 <?php
+// config/route.php
 
-namespace App\Controller;
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
 
-use App\Model\User;
-use Triangle\Engine\Request;
-use Triangle\Engine\Response;
+Router::get('/api/users', function (Request $request): Response {
+    $users = User::all();
+    return response()->json($users);
+});
 
-class ApiController
-{
-    public function users()
-    {
-        $users = User::all();
-        return Response::json($users);
-    }
+Router::post('/api/users', function (Request $request): Response {
+    $user = User::create([
+        'name' => $request->input('name'),
+        'email' => $request->input('email'),
+    ]);
     
-    public function create(Request $request)
-    {
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-        ]);
-        
-        return Response::json($user, 201);
-    }
-}
+    return response()->json($user, 201);
+});
 ```
 
-Добавьте маршруты:
+## Разница между конфигурационными файлами
 
-```php
-use Triangle\Router\Route;
+### Конфигурационные файлы (с `return`):
+- `config/app.php`
+- `config/middleware.php`
+- `config/database.php`
+- `config/session.php`
+- И другие...
 
-return [
-    Route::get('/api/users', [\App\Controller\ApiController::class, 'users']),
-    Route::post('/api/users', [\App\Controller\ApiController::class, 'create']),
-];
-```
+### Исполняемый код (без `return`):
+- `config/route.php` — здесь вызываются методы `Router::get()`, `Router::post()` и т.д.
 
 ## Следующие шаги
 

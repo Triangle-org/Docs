@@ -52,6 +52,11 @@ if (Container::has('service')) {
 
 Система конфигурации для работы с настройками приложения.
 
+**Загрузка конфигурации:**
+- Конфигурационные файлы из `config/` загружаются автоматически при старте
+- Файлы должны возвращать массивы через `return [...]`
+- Исключение: `config/route.php` — это исполняемый код, не конфигурация
+
 ```php
 use Triangle\Engine\Config;
 
@@ -71,6 +76,13 @@ Config::reload();
 config('app.name');
 ```
 
+**Структура конфигурации:**
+
+Конфигурационные файлы объединяются в единое дерево:
+- `config/app.php` → `config('app.name')`
+- `config/database.php` → `config('database.default')`
+- `config/middleware.php` → `config('middleware.')`
+
 ### Request & Response
 
 Классы для работы с запросами и ответами.
@@ -85,6 +97,8 @@ $request = Request::current();
 // Получение данных запроса
 $input = $request->input('key');
 $header = $request->header('Content-Type');
+$method = $request->method();
+$path = $request->path();
 
 // Работа с ответом
 Response::success($data);
@@ -126,9 +140,10 @@ app/
 └── view/           # Представления
 
 config/             # Файлы конфигурации
-├── app.php
-├── bootstrap.php
-├── container.php
+├── app.php         # Настройки приложения (return array)
+├── route.php       # Маршруты (исполняемый PHP код)
+├── middleware.php  # Middleware (return array)
+├── database.php    # База данных (return array)
 └── ...
 
 public/             # Публичная директория
@@ -150,6 +165,11 @@ use Triangle\Engine\Autoload;
 Autoload::start();
 ```
 
+Автозагрузка включает:
+- Автозагрузку классов через Composer
+- Загрузку файлов из `autoload/` директории
+- Инициализацию компонентов
+
 ## Bootstrap
 
 Система инициализации компонентов:
@@ -161,7 +181,11 @@ use Triangle\Engine\Bootstrap;
 Bootstrap::start();
 ```
 
-Компоненты автоматически регистрируются через свои классы Bootstrap.
+Компоненты автоматически регистрируются через свои классы Bootstrap:
+- `Triangle\Router\Bootstrap`
+- `Triangle\Middleware\Bootstrap`
+- `Triangle\Database\Bootstrap`
+- И другие...
 
 ## Плагины
 
@@ -198,6 +222,7 @@ app_path();         // Директория приложения
 config_path();      // Директория конфигурации
 public_path();      // Публичная директория
 runtime_path();     // Директория временных файлов
+plugin_path();      // Директория плагинов
 
 // Конфигурация
 config('key');      // Получение значения конфигурации
@@ -211,6 +236,11 @@ Log::error('message');
 Cache::get('key');
 Cache::set('key', 'value');
 Cache::delete('key');
+
+// Ответы
+response('text');           // Текстовый ответ
+response()->json($data);    // JSON ответ
+redirect('/path');          // Редирект
 ```
 
 ## Конфигурация
@@ -221,4 +251,12 @@ Cache::delete('key');
 - `config/bootstrap.php` — классы для инициализации
 - `config/container.php` — настройки контейнера зависимостей
 - `config/log.php` — настройки логирования
+- `config/route.php` — **исполняемый код** для регистрации маршрутов (не конфигурация!)
 
+## Важные отличия конфигурационных файлов
+
+1. **Большинство файлов** (`app.php`, `database.php`, `middleware.php` и т.д.) — это конфигурационные файлы, которые возвращают массивы через `return [...]`.
+
+2. **`route.php`** — это исключение! Это исполняемый PHP-код, который подключается через `require_once` и содержит прямые вызовы `Router::get()`, `Router::post()` и т.д.
+
+Это различие важно понимать при работе с фреймворком.

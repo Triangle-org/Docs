@@ -8,134 +8,222 @@
 composer require triangle/router
 ```
 
-## Базовое использование
+## Как это работает
 
-### Определение маршрутов
+Router автоматически загружается при старте приложения через `Triangle\Router\Bootstrap`. При инициализации:
 
-Маршруты определяются в файле `config/route.php`:
+1. Загружаются маршруты из `config/route.php`
+2. Загружаются маршруты из плагинов (если установлены)
+3. Создается диспетчер для обработки запросов
+
+## Определение маршрутов
+
+**Важно:** Файл `config/route.php` — это **не конфигурационный файл** с `return`, а обычный PHP-файл, который выполняется напрямую. В нем вызываются методы класса `Router`.
+
+### Базовое определение
 
 ```php
 <?php
+// config/route.php
 
-use Triangle\Router\Route;
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
 
-return [
-    Route::get('/', [\App\Controller\Index::class, 'index']),
-    Route::post('/api/users', [\App\Controller\User::class, 'create']),
-    Route::get('/users/{id}', [\App\Controller\User::class, 'show']),
-];
+// Простой маршрут
+Router::get('/', function (Request $request): Response {
+    return response('Hello, World!');
+});
+
+// Маршрут с параметрами
+Router::get('/user/{id}', function (Request $request, string $id): Response {
+    return response("User ID: $id");
+});
+
+// Маршрут на контроллер
+Router::get('/home', [\App\Controller\IndexController::class, 'index']);
 ```
 
 ### HTTP-методы
 
-Поддерживаются все стандартные HTTP-методы:
-
 ```php
-Route::get('/users', [UserController::class, 'index']);
-Route::post('/users', [UserController::class, 'store']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::patch('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
-Route::options('/users', [UserController::class, 'options']);
+Router::get('/users', [UserController::class, 'index']);
+Router::post('/users', [UserController::class, 'store']);
+Router::put('/users/{id}', [UserController::class, 'update']);
+Router::patch('/users/{id}', [UserController::class, 'update']);
+Router::delete('/users/{id}', [UserController::class, 'destroy']);
+Router::head('/users/{id}', [UserController::class, 'show']);
+Router::options('/users', [UserController::class, 'options']);
 
 // Любой метод
-Route::any('/path', [Controller::class, 'method']);
+Router::any('/path', [Controller::class, 'method']);
 ```
 
 ### Параметры маршрутов
 
 ```php
 // Обязательный параметр
-Route::get('/user/{id}', [UserController::class, 'show']);
+Router::get('/user/{id}', function (Request $request, string $id) {
+    // ...
+});
 
 // Необязательный параметр
-Route::get('/user/{id?}', [UserController::class, 'show']);
-
-// Параметр с ограничениями (регулярное выражение)
-Route::get('/user/{id}', [UserController::class, 'show'])
-    ->where(['id' => '[0-9]+']);
+Router::get('/user/{id?}', function (Request $request, string $id = null) {
+    // ...
+});
 
 // Несколько параметров
-Route::get('/posts/{post}/comments/{comment}', [CommentController::class, 'show']);
+Router::get('/posts/{post}/comments/{comment}', function (
+    Request $request,
+    string $post,
+    string $comment
+) {
+    // ...
+});
 ```
 
 ### Именованные маршруты
 
 ```php
-Route::get('/user/{id}', [UserController::class, 'show'])
+Router::get('/user/{id}', [UserController::class, 'show'])
     ->name('user.show');
 
-// Генерация URL
+// Генерация URL по имени маршрута
 $url = route('user.show', ['id' => 123]);
+// Результат: /user/123
 ```
 
-## Группировка маршрутов
-
-### Префикс
+### Группировка маршрутов
 
 ```php
-Route::group(['prefix' => 'api'], function () {
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/posts', [PostController::class, 'index']);
+// Группа с префиксом
+Router::group('/api', function () {
+    Router::get('/users', [UserController::class, 'index']);
+    Router::get('/posts', [PostController::class, 'index']);
+});
+
+// Группа с префиксом и middleware
+Router::group('/admin', function () {
+    Router::get('/dashboard', [AdminController::class, 'dashboard']);
+})->middleware(\App\Middleware\AuthMiddleware::class);
+```
+
+### Middleware на маршруте
+
+```php
+Router::get('/profile', [ProfileController::class, 'show'])
+    ->middleware(\App\Middleware\AuthMiddleware::class);
+
+// Несколько middleware
+Router::get('/admin', [AdminController::class, 'index'])
+    ->middleware([
+        \App\Middleware\AuthMiddleware::class,
+        \App\Middleware\AdminMiddleware::class,
+    ]);
+```
+
+## Автоматическая маршрутизация
+
+Triangle поддерживает автоматическую маршрутизацию на основе контроллеров:
+
+```
+/app/controller/UserController::index  -> GET /user/index
+/app/controller/UserController::show   -> GET /user/show
+```
+
+Автоматические маршруты работают для контроллеров в папке `app/controller/`.
+
+Для отключения автоматической маршрутизации используйте аннотацию `#[DisableDefaultRoute]`:
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Annotation\DisableDefaultRoute;
+use Triangle\Request;
+use Triangle\Response;
+
+#[DisableDefaultRoute]
+class UserController
+{
+    // Методы этого контроллера не будут автоматически маршрутизированы
+}
+```
+
+## Fallback маршруты
+
+Маршрут по умолчанию для несуществующих URL:
+
+```php
+Router::fallback(function (Request $request): Response {
+    return response('404 Not Found', 404);
 });
 ```
 
-### Middleware
+## Работа с маршрутами в коде
 
 ```php
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/profile', [ProfileController::class, 'show']);
-});
-```
+use Triangle\Router;
 
-### Комбинация
+// Получить маршрут по имени
+$route = Router::getByName('user.show');
 
-```php
-Route::group([
-    'prefix' => 'api',
-    'middleware' => ['auth', 'api']
-], function () {
-    Route::get('/users', [UserController::class, 'index']);
-});
+// Получить URL маршрута
+$url = route('user.show', ['id' => 123]);
 ```
 
 ## Алгоритмы диспетчеризации
 
 Router поддерживает несколько алгоритмов для оптимизации производительности:
 
-- **Mark-based** — самый быстрый для маршрутов с параметрами
-- **Group-based** — оптимален для большого количества маршрутов
-- **CharCount-based** — эффективен для маршрутов с различной длиной
-- **GroupPos-based** — комбинированный подход
+- **GroupCountBased** — оптимален для большого количества маршрутов (по умолчанию)
+- **MarkBased** — самый быстрый для маршрутов с параметрами
+- **CharCountBased** — эффективен для маршрутов с различной длиной
+- **GroupPosBased** — комбинированный подход
 
-Алгоритм выбирается автоматически, но может быть настроен в конфигурации.
+Алгоритм выбирается автоматически при создании диспетчера в `Router::collect()`.
 
-## Конфигурация
+## Примеры использования
 
-Настройки роутера находятся в `config/route.php`:
-
-```php
-return [
-    // Настройки алгоритма диспетчеризации
-    'dispatcher' => 'mark', // mark, group, char-count, group-pos
-    
-    // Кэширование маршрутов
-    'cache' => true,
-    'cache_file' => runtime_path('routes.php'),
-];
-```
-
-## Вспомогательные функции
+### Полный пример route.php
 
 ```php
-// Генерация URL
-route('user.show', ['id' => 123]);
+<?php
+// config/route.php
 
-// Текущий маршрут
-current_route();
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
 
-// Проверка активного маршрута
-is_route('user.show');
+// Главная страница
+Router::get('/', [\App\Controller\IndexController::class, 'index']);
+
+// API маршруты
+Router::group('/api', function () {
+    Router::get('/users', [\App\Controller\Api\UserController::class, 'index']);
+    Router::post('/users', [\App\Controller\Api\UserController::class, 'store']);
+    Router::get('/users/{id}', [\App\Controller\Api\UserController::class, 'show']);
+})->middleware(\App\Middleware\ApiAuthMiddleware::class);
+
+// Админка
+Router::group('/admin', function () {
+    Router::get('/dashboard', [\App\Controller\Admin\DashboardController::class, 'index']);
+    Router::get('/users', [\App\Controller\Admin\UserController::class, 'index']);
+})->middleware([
+    \App\Middleware\AuthMiddleware::class,
+    \App\Middleware\AdminMiddleware::class,
+]);
+
+// Именованные маршруты
+Router::get('/profile', [\App\Controller\ProfileController::class, 'show'])
+    ->name('profile.show');
+
+Router::get('/login', [\App\Controller\AuthController::class, 'showLogin'])
+    ->name('login');
+
+// Fallback
+Router::fallback(function (Request $request): Response {
+    return response('404 Not Found', 404);
+});
 ```
-

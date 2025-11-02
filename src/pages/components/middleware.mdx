@@ -10,7 +10,7 @@ composer require triangle/middleware
 
 ## Создание Middleware
 
-Создайте класс middleware:
+Создайте класс middleware, реализующий интерфейс `Triangle\Middleware\MiddlewareInterface`:
 
 ```php
 <?php
@@ -22,14 +22,14 @@ use Triangle\Middleware\MiddlewareInterface;
 
 class AuthMiddleware implements MiddlewareInterface
 {
-    public function process(Request $request, callable $next)
+    public function process($request, callable $next)
     {
         // Проверка аутентификации
         if (!$request->session()->get('user_id')) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Передача управления следующему middleware
+        // Передача управления следующему middleware или обработчику
         return $next($request);
     }
 }
@@ -37,22 +37,57 @@ class AuthMiddleware implements MiddlewareInterface
 
 ## Регистрация Middleware
 
-### Глобальный Middleware
-
-В `config/middleware.php`:
+### Через конфигурацию (config/middleware.php)
 
 ```php
+<?php
+// config/middleware.php
+
 return [
-    'global' => [
+    // Глобальное middleware (применяется ко всем маршрутам)
+    '' => [
         \App\Middleware\CorsMiddleware::class,
         \App\Middleware\LoggingMiddleware::class,
+    ],
+    
+    // Middleware для конкретного приложения
+    'api' => [
+        \App\Middleware\ApiAuthMiddleware::class,
     ],
 ];
 ```
 
-### Маршрутный Middleware
+**Структура конфигурации:**
+- `''` (пустая строка) — глобальное middleware для всех приложений
+- `'api'` — middleware для приложения `api`
+- Можно указать несколько приложений с их middleware
 
-Используйте аннотации в контроллерах:
+### На маршруте
+
+```php
+use Triangle\Router;
+
+Router::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(\App\Middleware\AuthMiddleware::class);
+
+// Несколько middleware
+Router::get('/admin', [AdminController::class, 'index'])
+    ->middleware([
+        \App\Middleware\AuthMiddleware::class,
+        \App\Middleware\AdminMiddleware::class,
+    ]);
+```
+
+### Через группу маршрутов
+
+```php
+Router::group('/admin', function () {
+    Router::get('/dashboard', [DashboardController::class, 'index']);
+    Router::get('/users', [UserController::class, 'index']);
+})->middleware(\App\Middleware\AuthMiddleware::class);
+```
+
+### Через аннотации в контроллере
 
 ```php
 <?php
@@ -69,36 +104,49 @@ class UserController
     {
         // ...
     }
+    
+    // Middleware только для конкретного метода
+    #[Middleware(\App\Middleware\AdminMiddleware::class)]
+    public function delete(Request $request)
+    {
+        // ...
+    }
 }
 ```
 
-### Групповой Middleware
-
-В маршрутах:
+### Через свойство класса
 
 ```php
-use Triangle\Router\Route;
+<?php
 
-Route::group(['middleware' => \App\Middleware\AuthMiddleware::class], function () {
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/profile', [ProfileController::class, 'show']);
-});
+namespace App\Controller;
+
+use Triangle\Engine\Request;
+
+class UserController
+{
+    protected array $middleware = [
+        \App\Middleware\AuthMiddleware::class,
+    ];
+    
+    public function index(Request $request)
+    {
+        // ...
+    }
+}
 ```
 
-## Цепочка Middleware
+## Порядок выполнения Middleware
 
-Middlewares выполняются последовательно:
+Middleware выполняются в следующем порядке:
 
-```php
-// config/middleware.php
-return [
-    'global' => [
-        \App\Middleware\CorsMiddleware::class,      // 1
-        \App\Middleware\LoggingMiddleware::class, // 2
-        \App\Middleware\AuthMiddleware::class,     // 3
-    ],
-];
-```
+1. **Глобальное middleware** (из `config/middleware.php`, ключ `''`)
+2. **Middleware приложения** (из `config/middleware.php`, по ключу приложения)
+3. **Middleware маршрута** (указанное через `->middleware()`)
+4. **Middleware контроллера** (из свойства `$middleware` или аннотаций)
+5. **Middleware метода** (из аннотаций метода)
+
+После выполнения всех middleware вызывается обработчик маршрута, затем middleware выполняются в обратном порядке для обработки ответа.
 
 ## Примеры Middleware
 
@@ -114,12 +162,13 @@ use Triangle\Middleware\MiddlewareInterface;
 
 class CorsMiddleware implements MiddlewareInterface
 {
-    public function process(Request $request, callable $next)
+    public function process($request, callable $next)
     {
         $response = $next($request);
         
         $response->header('Access-Control-Allow-Origin', '*');
         $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         
         return $response;
     }
@@ -139,7 +188,7 @@ use Triangle\Support\Cache;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    public function process(Request $request, callable $next)
+    public function process($request, callable $next)
     {
         $key = 'rate_limit:' . $request->getRealIp();
         $count = Cache::get($key, 0);
@@ -155,3 +204,64 @@ class RateLimitMiddleware implements MiddlewareInterface
 }
 ```
 
+### Логирование запросов
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+use Triangle\Support\Log;
+
+class LoggingMiddleware implements MiddlewareInterface
+{
+    public function process($request, callable $next)
+    {
+        $startTime = microtime(true);
+        
+        $response = $next($request);
+        
+        $duration = microtime(true) - $startTime;
+        
+        Log::info('Request processed', [
+            'method' => $request->method(),
+            'path' => $request->path(),
+            'status' => $response->getStatusCode(),
+            'duration' => round($duration * 1000, 2) . 'ms',
+        ]);
+        
+        return $response;
+    }
+}
+```
+
+## Middleware для плагинов
+
+Middleware можно регистрировать для конкретных плагинов:
+
+```php
+<?php
+// config/middleware.php
+
+return [
+    // Middleware для плагина
+    'plugin.oauth' => [
+        \App\Middleware\OAuthMiddleware::class,
+    ],
+];
+```
+
+## Динамическое создание Middleware
+
+```php
+Router::get('/admin', [AdminController::class, 'index'])
+    ->middleware(function ($request, $next) {
+        // Inline middleware
+        if (!$request->session()->get('is_admin')) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+        return $next($request);
+    });
+```

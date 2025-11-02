@@ -19,6 +19,11 @@ my-app/
 │   ├── model/          # Модели
 │   └── view/           # Представления
 ├── config/             # Конфигурация
+│   ├── app.php         # Настройки приложения (return array)
+│   ├── route.php       # Маршруты (выполняемый PHP код)
+│   ├── middleware.php  # Middleware (return array)
+│   ├── database.php    # База данных (return array)
+│   └── ...
 ├── public/             # Публичная директория
 ├── runtime/            # Временные файлы
 └── master              # Скрипт запуска
@@ -47,27 +52,101 @@ php master status
 
 ## Конфигурация
 
-### Основные настройки
+### Настройки приложения (config/app.php)
 
-`config/app.php`:
+Это **конфигурационный файл** с массивом настроек:
 
 ```php
+<?php
+// config/app.php
+
 return [
-    'name' => 'My App',
     'debug' => true,
-    'timezone' => 'Europe/Moscow',
+    'name' => env('APP_NAME', 'Triangle App'),
+    
+    'plugin_alias' => env('APP_PLUGIN_ALIAS', 'plugin'),
+    'plugin_uri' => env('APP_PLUGIN_URI', 'app'),
+    
+    'controller_suffix' => env('CONTROLLER_SUFFIX', ''),
+    'controller_reuse' => env('CONTROLLER_REUSE', true),
+    
+    'http_always_200' => false,
+    'http_headers' => [
+        'Content-Language' => 'ru',
+        'Access-Control-Allow-Origin' => '*',
+    ],
 ];
 ```
 
-### Сервер
+### Маршруты (config/route.php)
 
-`config/server.php`:
+**Важно:** Это **НЕ конфигурационный файл**, а выполняемый PHP-код:
 
 ```php
+<?php
+// config/route.php
+
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
+
+// Простые маршруты
+Router::get('/', [\App\Controller\IndexController::class, 'index']);
+Router::get('/about', function (Request $request): Response {
+    return response('About page');
+});
+
+// Маршруты с параметрами
+Router::get('/user/{id}', [\App\Controller\UserController::class, 'show']);
+
+// API маршруты
+Router::group('/api', function () {
+    Router::get('/users', [\App\Controller\Api\UserController::class, 'index']);
+    Router::post('/users', [\App\Controller\Api\UserController::class, 'store']);
+})->middleware(\App\Middleware\ApiAuthMiddleware::class);
+```
+
+### Middleware (config/middleware.php)
+
+Это **конфигурационный файл** с массивом middleware:
+
+```php
+<?php
+// config/middleware.php
+
 return [
-    'listen' => 'http://0.0.0.0:88',
-    'processes' => 4,
-    'name' => 'Triangle',
+    // Глобальное middleware
+    '' => [
+        \App\Middleware\CorsMiddleware::class,
+        \App\Middleware\LoggingMiddleware::class,
+    ],
+    
+    // Middleware для приложения
+    'api' => [
+        \App\Middleware\ApiAuthMiddleware::class,
+    ],
+];
+```
+
+### База данных (config/database.php)
+
+Это **конфигурационный файл**:
+
+```php
+<?php
+// config/database.php
+
+return [
+    'default' => 'mysql',
+    'connections' => [
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => '127.0.0.1',
+            'database' => 'myapp',
+            'username' => 'root',
+            'password' => '',
+        ],
+    ],
 ];
 ```
 
@@ -75,13 +154,14 @@ return [
 
 ```php
 <?php
+// app/controller/Index.php
 
 namespace App\Controller;
 
 use Triangle\Engine\Request;
 use Triangle\View\View;
 
-class IndexController
+class Index
 {
     public function index(Request $request)
     {
@@ -92,103 +172,78 @@ class IndexController
 }
 ```
 
-## Маршрутизация
-
-Определите маршруты в `config/route.php`:
-
-```php
-use Triangle\Router\Route;
-
-return [
-    Route::get('/', [\App\Controller\IndexController::class, 'index']),
-    Route::get('/users/{id}', [\App\Controller\UserController::class, 'show']),
-];
-```
+Контроллер автоматически будет доступен по маршруту `/index/index` (автоматическая маршрутизация).
 
 ## Работа с базой данных
-
-### Конфигурация
-
-`config/database.php`:
-
-```php
-return [
-    'default' => 'mysql',
-    'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
-            'host' => '127.0.0.1',
-            'database' => 'myapp',
-            'username' => 'user',
-            'password' => 'password',
-        ],
-    ],
-];
-```
-
-### Использование
-
-```php
-use Triangle\Database\DB;
-
-$users = DB::table('users')->get();
-```
-
-## Пример приложения
-
-### Контроллер
 
 ```php
 <?php
 
 namespace App\Controller;
 
-use App\Model\User;
-use Triangle\Engine\Request;
-use Triangle\View\View;
+use Triangle\Database\DB;
 
 class UserController
 {
     public function index()
     {
-        $users = User::all();
-        return View::render('users/index', compact('users'));
-    }
-    
-    public function show(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        return View::render('users/show', compact('user'));
+        $users = DB::table('users')->get();
+        return response()->json($users);
     }
 }
 ```
 
-### Модель
+## Примеры использования
+
+### Простое API
 
 ```php
 <?php
+// config/route.php
 
-namespace App\Model;
+use Triangle\Request;
+use Triangle\Response;
+use Triangle\Router;
 
-use Illuminate\Database\Eloquent\Model;
+Router::get('/api/users', function (Request $request): Response {
+    $users = DB::table('users')->get();
+    return response()->json($users);
+});
 
-class User extends Model
-{
-    protected $table = 'users';
-    protected $fillable = ['name', 'email'];
-}
+Router::post('/api/users', function (Request $request): Response {
+    $user = DB::table('users')->insert([
+        'name' => $request->input('name'),
+        'email' => $request->input('email'),
+    ]);
+    
+    return response()->json($user, 201);
+});
 ```
 
-### Представление
+### С контроллерами
 
 ```php
-<!-- app/view/users/index.phtml -->
-<h1>Users</h1>
-<ul>
-    <?php foreach ($users as $user): ?>
-        <li><?= htmlspecialchars($user->name) ?></li>
-    <?php endforeach; ?>
-</ul>
+<?php
+// config/route.php
+
+use Triangle\Router;
+
+Router::get('/', [\App\Controller\IndexController::class, 'index']);
+Router::get('/users', [\App\Controller\UserController::class, 'index']);
+Router::get('/users/{id}', [\App\Controller\UserController::class, 'show']);
+```
+
+### С middleware
+
+```php
+<?php
+// config/route.php
+
+use Triangle\Router;
+
+Router::group('/admin', function () {
+    Router::get('/dashboard', [\App\Controller\Admin\DashboardController::class, 'index']);
+})->middleware(\App\Middleware\AuthMiddleware::class);
 ```
 
 ## API-ответы
@@ -197,48 +252,19 @@ class User extends Model
 use Triangle\Engine\Response;
 
 // JSON-ответ
-return Response::json(['users' => $users]);
+return response()->json(['users' => $users]);
 
-// Успешный ответ
-return Response::success($data);
+// Текст
+return response('Hello, World!');
 
-// Ошибка
-return Response::error('Not found', 404);
-```
+// HTML
+return response('<h1>Hello</h1>')->header('Content-Type', 'text/html');
 
-## Middleware
+// С кодом статуса
+return response('Not Found', 404);
 
-Создайте middleware:
-
-```php
-<?php
-
-namespace App\Middleware;
-
-use Triangle\Engine\Request;
-use Triangle\Middleware\MiddlewareInterface;
-
-class AuthMiddleware implements MiddlewareInterface
-{
-    public function process(Request $request, callable $next)
-    {
-        if (!session()->get('user_id')) {
-            return Response::error('Unauthorized', 401);
-        }
-        
-        return $next($request);
-    }
-}
-```
-
-Зарегистрируйте в `config/middleware.php`:
-
-```php
-return [
-    'global' => [
-        \App\Middleware\AuthMiddleware::class,
-    ],
-];
+// Редирект
+return redirect('/login');
 ```
 
 ## Статические файлы
@@ -246,6 +272,8 @@ return [
 Настройка в `config/static.php`:
 
 ```php
+<?php
+
 return [
     'enable' => true,
     'path' => public_path(),
@@ -281,4 +309,3 @@ php master start -d
 ```bash
 docker-compose up -d
 ```
-
