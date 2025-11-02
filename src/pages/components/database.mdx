@@ -1,0 +1,249 @@
+export const title = "Database Component";
+
+# Database Component
+
+Компонент `triangle/database` предоставляет работу с базами данных на основе Illuminate Database (Laravel).
+
+## Установка
+
+```bash
+composer require triangle/database
+```
+
+## Конфигурация
+
+Настройки базы данных находятся в `config/database.php`:
+
+```php
+return [
+    'default' => 'mysql',
+    
+    'connections' => [
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => '127.0.0.1',
+            'port' => 3306,
+            'database' => 'database',
+            'username' => 'user',
+            'password' => 'password',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+        ],
+        
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'host' => '127.0.0.1',
+            'port' => 5432,
+            'database' => 'database',
+            'username' => 'user',
+            'password' => 'password',
+            'charset' => 'utf8',
+            'prefix' => '',
+        ],
+        
+        'sqlite' => [
+            'driver' => 'sqlite',
+            'database' => database_path('database.sqlite'),
+            'prefix' => '',
+        ],
+    ],
+];
+```
+
+## Query Builder
+
+### Базовые запросы
+
+```php
+use Triangle\Database\DB;
+
+// Выбор всех записей
+$users = DB::table('users')->get();
+
+// Выбор одной записи
+$user = DB::table('users')->where('id', 1)->first();
+
+// Выбор значения одного поля
+$name = DB::table('users')->where('id', 1)->value('name');
+
+// Подсчет записей
+$count = DB::table('users')->count();
+
+// Вставка
+DB::table('users')->insert([
+    'name' => 'John',
+    'email' => 'john@example.com',
+]);
+
+// Обновление
+DB::table('users')
+    ->where('id', 1)
+    ->update(['name' => 'Jane']);
+
+// Удаление
+DB::table('users')->where('id', 1)->delete();
+```
+
+### Условия WHERE
+
+```php
+DB::table('users')
+    ->where('name', 'John')
+    ->where('age', '>', 18)
+    ->get();
+
+DB::table('users')
+    ->whereIn('id', [1, 2, 3])
+    ->get();
+
+DB::table('users')
+    ->whereNull('deleted_at')
+    ->get();
+
+DB::table('users')
+    ->whereBetween('age', [18, 65])
+    ->get();
+```
+
+### JOIN
+
+```php
+DB::table('users')
+    ->join('posts', 'users.id', '=', 'posts.user_id')
+    ->select('users.*', 'posts.title')
+    ->get();
+```
+
+### Агрегатные функции
+
+```php
+DB::table('orders')->sum('amount');
+DB::table('orders')->avg('amount');
+DB::table('orders')->max('amount');
+DB::table('orders')->min('amount');
+```
+
+## Eloquent ORM
+
+### Модели
+
+```php
+<?php
+
+namespace App\Model;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+    protected $fillable = ['name', 'email'];
+    protected $hidden = ['password'];
+}
+```
+
+### Использование
+
+```php
+use App\Model\User;
+
+// Получить все
+$users = User::all();
+
+// Найти по ID
+$user = User::find(1);
+
+// Создать
+$user = User::create([
+    'name' => 'John',
+    'email' => 'john@example.com',
+]);
+
+// Обновить
+$user = User::find(1);
+$user->name = 'Jane';
+$user->save();
+
+// Удалить
+$user = User::find(1);
+$user->delete();
+```
+
+### Отношения
+
+```php
+// One-to-Many
+class User extends Model
+{
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Many-to-One
+class Post extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+// Использование
+$user = User::find(1);
+$posts = $user->posts;
+```
+
+## Миграции
+
+Создание миграции:
+
+```bash
+php master make:migration create_users_table
+```
+
+Пример миграции:
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('users');
+    }
+};
+```
+
+Выполнение миграций:
+
+```bash
+php master migrate
+```
+
+## Транзакции
+
+```php
+DB::transaction(function () {
+    DB::table('users')->insert(['name' => 'John']);
+    DB::table('posts')->insert(['title' => 'Post']);
+});
+```
+

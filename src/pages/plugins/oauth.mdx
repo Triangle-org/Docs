@@ -1,0 +1,191 @@
+export const title = "OAuth Plugin";
+
+# OAuth Plugin
+
+Плагин `triangle/oauth` предоставляет мощную систему OAuth-аутентификации с поддержкой множества популярных провайдеров.
+
+## Установка
+
+```bash
+composer require triangle/oauth
+```
+
+## Поддерживаемые провайдеры
+
+Плагин поддерживает 50+ провайдеров, включая:
+
+- **Социальные сети:** Google, Facebook, Twitter, LinkedIn, VKontakte, Yandex, Mail.ru
+- **Разработка:** GitHub, GitLab, Bitbucket
+- **Мессенджеры:** Discord, Telegram, Slack
+- **Игровые:** Steam, Twitch
+- **Прочее:** Apple, Amazon, PayPal, Spotify и многие другие
+
+Полный список провайдеров см. в [репозитории](https://github.com/Triangle-org/OAuth).
+
+## Конфигурация
+
+### Настройка провайдера
+
+В `config/plugins/oauth.php`:
+
+```php
+return [
+    'providers' => [
+        'google' => [
+            'client_id' => env('GOOGLE_CLIENT_ID'),
+            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+            'redirect_uri' => 'http://localhost:88/auth/google/callback',
+        ],
+        
+        'facebook' => [
+            'client_id' => env('FACEBOOK_APP_ID'),
+            'client_secret' => env('FACEBOOK_APP_SECRET'),
+            'redirect_uri' => 'http://localhost:88/auth/facebook/callback',
+        ],
+    ],
+    
+    'storage' => \Triangle\OAuth\Storage\Session::class,
+];
+```
+
+### Получение учетных данных
+
+1. **Google:**
+   - Перейдите на [Google Cloud Console](https://console.cloud.google.com/)
+   - Создайте проект и OAuth 2.0 credentials
+
+2. **Facebook:**
+   - Перейдите на [Facebook Developers](https://developers.facebook.com/)
+   - Создайте приложение
+
+## Использование
+
+### Инициализация провайдера
+
+```php
+use Triangle\OAuth\OAuth;
+
+$oauth = new OAuth();
+
+// Google
+$google = $oauth->provider('google', [
+    'client_id' => 'your-client-id',
+    'client_secret' => 'your-client-secret',
+    'redirect_uri' => 'http://localhost:88/auth/google/callback',
+]);
+```
+
+### Авторизация
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\OAuth\OAuth;
+use Triangle\Engine\Request;
+
+class AuthController
+{
+    public function redirectToGoogle(OAuth $oauth)
+    {
+        $provider = $oauth->provider('google');
+        $authorizationUrl = $provider->getAuthorizationUrl();
+        
+        // Сохранение state для защиты от CSRF
+        session()->set('oauth_state', $provider->getState());
+        
+        return redirect($authorizationUrl);
+    }
+    
+    public function handleGoogleCallback(Request $request, OAuth $oauth)
+    {
+        $provider = $oauth->provider('google');
+        
+        // Проверка state
+        $state = $request->input('state');
+        if ($state !== session()->get('oauth_state')) {
+            throw new \Exception('Invalid state');
+        }
+        
+        // Обмен кода на токен
+        $accessToken = $provider->getAccessToken('authorization_code', [
+            'code' => $request->input('code'),
+        ]);
+        
+        // Получение данных пользователя
+        $userData = $provider->getUserProfile($accessToken);
+        
+        // Работа с данными пользователя
+        // ...
+        
+        return response()->json($userData);
+    }
+}
+```
+
+### Получение профиля пользователя
+
+```php
+$profile = $provider->getUserProfile($accessToken);
+
+// Доступные поля:
+$profile->identifier;  // Уникальный ID
+$profile->email;       // Email
+$profile->firstName;   // Имя
+$profile->lastName;    // Фамилия
+$profile->photoURL;    // URL фото
+```
+
+### Работа с токенами
+
+```php
+// Сохранение токена
+session()->set('oauth_token', $accessToken);
+
+// Использование сохраненного токена
+$token = session()->get('oauth_token');
+$profile = $provider->getUserProfile($token);
+```
+
+## Маршруты
+
+Определите маршруты для OAuth:
+
+```php
+// config/route.php
+use Triangle\Router\Route;
+
+Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
+Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+```
+
+## Примеры для разных провайдеров
+
+### GitHub
+
+```php
+$github = $oauth->provider('github', [
+    'client_id' => env('GITHUB_CLIENT_ID'),
+    'client_secret' => env('GITHUB_CLIENT_SECRET'),
+    'redirect_uri' => 'http://localhost:88/auth/github/callback',
+]);
+```
+
+### VKontakte
+
+```php
+$vkontakte = $oauth->provider('vkontakte', [
+    'client_id' => env('VK_APP_ID'),
+    'client_secret' => env('VK_SECRET_KEY'),
+    'redirect_uri' => 'http://localhost:88/auth/vkontakte/callback',
+]);
+```
+
+## Безопасность
+
+- Всегда проверяйте `state` параметр для защиты от CSRF
+- Используйте HTTPS в production
+- Храните секреты в переменных окружения
+- Не сохраняйте чувствительные данные в сессиях без шифрования
+

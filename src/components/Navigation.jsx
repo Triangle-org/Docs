@@ -186,49 +186,51 @@ export const navigation = [
         title: 'Введение',
         links: [
             {title: 'Обзор', href: '/'},
-            {title: 'Преимущества', href: '/features'},
-            {title: 'Принцип работы', href: '/principle'},
-            {title: 'Примеры использования', href: '/example'},
+            {title: 'Быстрый старт', href: '/quickstart'},
+            {title: 'Архитектура', href: '/architecture'},
+            {title: 'Установка', href: '/install'},
         ],
     },
     {
-        title: 'Установка',
+        title: 'Engine',
         links: [
-            {title: 'Предупреждения', href: '/must-read'},
-            {title: 'Системные требования', href: '/install/requirement'},
-            {title: 'Установка и настройка', href: '/install/install'},
-            {title: 'Запуск и управление', href: '/install/start-and-stop'},
+            {title: 'Обзор', href: '/engine'},
         ],
     },
     {
-        title: 'Разработка',
+        title: 'Компоненты',
         links: [
-            // { title: 'Перед началом', href: '/development/before' },
-            {title: 'Структура', href: '/development/structure'},
-            {title: 'Основной процесс', href: '/development/process'},
-            // { title: 'Рекомендации', href: '/development/standard' },
+            {title: 'Обзор', href: '/components'},
+            {title: 'Console', href: '/components/console'},
+            {title: 'Router', href: '/components/router'},
+            {title: 'Database', href: '/components/database'},
+            {title: 'View', href: '/components/view'},
+            {title: 'Session', href: '/components/session'},
+            {title: 'Middleware', href: '/components/middleware'},
+            {title: 'Events', href: '/components/events'},
+            {title: 'Cron', href: '/components/cron'},
         ],
     },
     {
-        title: 'HTTP',
+        title: 'Движки',
         links: [
-            {title: 'Запрос', href: '/http/request'},
-            {title: 'Ответ', href: '/http/response'},
-            {title: 'Сессия', href: '/http/session'},
-            {title: 'Управление сессией', href: '/http/session-control'},
-            {title: 'SSE', href: '/http/SSE'},
+            {title: 'Обзор', href: '/engines'},
         ],
     },
-    // {
-    //   title: 'Resources',
-    //   links: [
-    //     { title: 'Contacts', href: '/contacts' },
-    //     { title: 'Conversations', href: '/conversations' },
-    //     { title: 'Messages', href: '/messages' },
-    //     { title: 'Groups', href: '/groups' },
-    //     { title: 'Attachments', href: '/attachments' },
-    //   ],
-    // },
+    {
+        title: 'Плагины',
+        links: [
+            {title: 'Обзор', href: '/plugins'},
+            {title: 'OAuth', href: '/plugins/oauth'},
+        ],
+    },
+    {
+        title: 'Фреймворки',
+        links: [
+            {title: 'Web', href: '/frameworks/web'},
+            {title: 'WS', href: '/frameworks/ws'},
+        ],
+    },
 ]
 
 export function Navigation(props) {

@@ -1,0 +1,61 @@
+export const title = "Движки";
+
+# Движки Triangle Framework
+
+Движки — это слои приложений, построенные на основе Triangle Engine. Они предоставляют специализированную функциональность для различных типов приложений.
+
+## HTTP Engine (`triangle/engine-http`)
+
+HTTP-слой для обработки HTTP-запросов. Является основой для фреймворка `triangle/web`.
+
+### Возможности
+
+- Обработка HTTP-запросов и ответов
+- Интеграция с Router и Middleware компонентами
+- Поддержка статических файлов
+- Обработка SSE (Server-Sent Events)
+- Сессии и куки
+
+### Установка
+
+```bash
+composer require triangle/engine-http
+```
+
+### Использование
+
+HTTP Engine используется как база для создания HTTP-приложений. Подробнее смотрите в документации [Web Framework](/frameworks/web).
+
+**Документация:** [HTTP Engine](/engines/http)
+
+## WebSocket Engine (`triangle/engine-ws`)
+
+WebSocket-слой для работы с WebSocket-соединениями. Является основой для фреймворка `triangle/ws`.
+
+### Возможности
+
+- Обработка WebSocket-соединений
+- Управление подключениями
+- Роутинг WebSocket-сообщений
+- Middleware для WebSocket
+
+### Установка
+
+```bash
+composer require triangle/engine-ws
+```
+
+### Использование
+
+WebSocket Engine используется как база для создания real-time приложений. Подробнее смотрите в документации [WS Framework](/frameworks/ws).
+
+**Документация:** [WebSocket Engine](/engines/websocket)
+
+## Важно
+
+⚠️ **Движки `engine-http` и `engine-ws` являются взаимоисключающими** — они не могут использоваться одновременно в одном проекте из-за конфликтов в конфигурации и обработке запросов.
+
+Используйте:
+- `triangle/engine-http` для HTTP-приложений
+- `triangle/engine-ws` для WebSocket-приложений
+

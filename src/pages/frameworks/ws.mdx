@@ -1,0 +1,289 @@
+export const title = "WS Framework";
+
+# Triangle WS Framework
+
+`triangle/ws` — это WebSocket-фреймворк на основе Triangle Engine для разработки real-time приложений.
+
+## Установка
+
+```bash
+composer create-project triangle/ws my-ws-app
+cd my-ws-app
+```
+
+## Структура проекта
+
+```
+my-ws-app/
+├── app/
+│   ├── controller/     # WebSocket контроллеры
+│   ├── middleware/     # Middleware
+│   └── model/          # Модели
+├── config/             # Конфигурация
+├── process/            # Дополнительные процессы
+└── master              # Скрипт запуска
+```
+
+## Запуск
+
+```bash
+# Разработка
+php master start
+
+# Production
+php master start -d
+
+# Остановка
+php master stop
+```
+
+## Конфигурация
+
+### Сервер
+
+`config/server.php`:
+
+```php
+return [
+    'listen' => 'websocket://0.0.0.0:2345',
+    'processes' => 4,
+    'name' => 'Triangle-WS',
+];
+```
+
+## Создание WebSocket контроллера
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Engine\Request;
+use Triangle\Ws\Connection;
+
+class ChatController
+{
+    public function onMessage(Connection $connection, Request $request)
+    {
+        $data = json_decode($request->rawBody(), true);
+        
+        // Отправка сообщения всем подключенным клиентам
+        foreach (Connection::getAll() as $conn) {
+            $conn->send(json_encode([
+                'type' => 'message',
+                'data' => $data['message'],
+            ]));
+        }
+    }
+    
+    public function onConnect(Connection $connection)
+    {
+        $connection->send(json_encode([
+            'type' => 'connected',
+            'message' => 'Welcome!',
+        ]));
+    }
+    
+    public function onClose(Connection $connection)
+    {
+        // Обработка отключения
+    }
+}
+```
+
+## Маршрутизация WebSocket
+
+Определите маршруты в `config/route.php`:
+
+```php
+use Triangle\Router\Route;
+
+return [
+    Route::ws('/chat', [\App\Controller\ChatController::class, 'onMessage']),
+];
+```
+
+## Работа с подключениями
+
+### Получение всех подключений
+
+```php
+use Triangle\Ws\Connection;
+
+$allConnections = Connection::getAll();
+
+// Отправка всем
+foreach ($allConnections as $connection) {
+    $connection->send($message);
+}
+```
+
+### Работа с конкретным подключением
+
+```php
+// Отправка данных
+$connection->send(json_encode(['message' => 'Hello']));
+
+// Закрытие подключения
+$connection->close();
+
+// Получение информации
+$connectionId = $connection->id;
+$remoteAddress = $connection->getRemoteAddress();
+```
+
+## Пример: Чат-приложение
+
+### Контроллер
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Model\Message;
+use Triangle\Engine\Request;
+use Triangle\Ws\Connection;
+
+class ChatController
+{
+    public function onMessage(Connection $connection, Request $request)
+    {
+        $data = json_decode($request->rawBody(), true);
+        
+        // Сохранение сообщения в БД
+        $message = Message::create([
+            'user_id' => $connection->session->get('user_id'),
+            'text' => $data['message'],
+        ]);
+        
+        // Отправка всем подключенным
+        foreach (Connection::getAll() as $conn) {
+            $conn->send(json_encode([
+                'type' => 'new_message',
+                'message' => $message->toArray(),
+            ]));
+        }
+    }
+    
+    public function onConnect(Connection $connection)
+    {
+        // Отправка истории сообщений
+        $messages = Message::latest()->limit(50)->get();
+        
+        $connection->send(json_encode([
+            'type' => 'history',
+            'messages' => $messages->toArray(),
+        ]));
+    }
+}
+```
+
+### Клиентская часть (JavaScript)
+
+```javascript
+const ws = new WebSocket('ws://localhost:2345/chat');
+
+ws.onopen = function() {
+    console.log('Connected');
+};
+
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    
+    switch(data.type) {
+        case 'new_message':
+            addMessageToChat(data.message);
+            break;
+        case 'history':
+            loadHistory(data.messages);
+            break;
+    }
+};
+
+ws.onclose = function() {
+    console.log('Disconnected');
+};
+
+function sendMessage(message) {
+    ws.send(JSON.stringify({
+        message: message
+    }));
+}
+```
+
+## Middleware для WebSocket
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+use Triangle\Ws\Connection;
+
+class AuthMiddleware implements MiddlewareInterface
+{
+    public function process(Request $request, callable $next)
+    {
+        $connection = $request->connection;
+        
+        if (!$connection->session->get('user_id')) {
+            $connection->close();
+            return;
+        }
+        
+        return $next($request);
+    }
+}
+```
+
+## Группировка подключений
+
+```php
+use Triangle\Ws\Connection;
+
+// Добавление в группу
+Connection::joinGroup($connection, 'room:123');
+
+// Отправка группе
+Connection::sendToGroup('room:123', $message);
+
+// Удаление из группы
+Connection::leaveGroup($connection, 'room:123');
+```
+
+## Процессы
+
+Для дополнительных процессов создайте файлы в `process/`:
+
+```php
+<?php
+
+namespace App\Process;
+
+use Triangle\Engine\Process;
+
+class Monitor extends Process
+{
+    public function onWorkerStart()
+    {
+        // Инициализация процесса
+    }
+    
+    public function onWorkerStop()
+    {
+        // Очистка при остановке
+    }
+}
+```
+
+Зарегистрируйте в `config/process.php`:
+
+```php
+return [
+    \App\Process\Monitor::class,
+];
+```
+

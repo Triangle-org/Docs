@@ -1,0 +1,128 @@
+export const title = "Cron Component";
+
+# Cron Component
+
+Компонент `triangle/cron` предоставляет планировщик задач (cron-задач) для выполнения периодических задач.
+
+## Установка
+
+```bash
+composer require triangle/cron
+```
+
+## Конфигурация
+
+Задачи определяются в `config/cron.php`:
+
+```php
+return [
+    [
+        'name' => 'CleanOldSessions',
+        'schedule' => '0 0 * * *', // Каждый день в полночь
+        'task' => \App\Tasks\CleanOldSessions::class,
+    ],
+    [
+        'name' => 'SendReports',
+        'schedule' => '0 9 * * 1', // Каждый понедельник в 9:00
+        'task' => \App\Tasks\SendReports::class,
+    ],
+];
+```
+
+## Формат расписания (Cron Expression)
+
+Cron-выражение состоит из 5 полей:
+
+```
+* * * * *
+│ │ │ │ │
+│ │ │ │ └─── День недели (0-7, где 0 и 7 = воскресенье)
+│ │ │ └───── Месяц (1-12)
+│ │ └─────── День месяца (1-31)
+│ └───────── Час (0-23)
+└─────────── Минута (0-59)
+```
+
+### Примеры
+
+```php
+'0 0 * * *'      // Каждый день в полночь
+'0 9 * * 1'      // Каждый понедельник в 9:00
+'*/5 * * * *'    // Каждые 5 минут
+'0 0 1 * *'       // Первое число каждого месяца
+'0 0 * * 0'       // Каждое воскресенье
+```
+
+## Создание задачи
+
+```php
+<?php
+
+namespace App\Tasks;
+
+use Triangle\Cron\TaskInterface;
+
+class CleanOldSessions implements TaskInterface
+{
+    public function execute()
+    {
+        // Удаление старых сессий
+        $deleted = DB::table('sessions')
+            ->where('created_at', '<', now()->subDays(30))
+            ->delete();
+        
+        echo "Deleted {$deleted} old sessions\n";
+    }
+}
+```
+
+## Запуск планировщика
+
+Планировщик запускается автоматически при старте приложения, если компонент Cron установлен и настроен.
+
+Для ручного запуска задач:
+
+```bash
+php master cron:run
+```
+
+## Интеграция с событиями
+
+Задачи могут генерировать события:
+
+```php
+<?php
+
+namespace App\Tasks;
+
+use App\Events\DailyReportGenerated;
+use Triangle\Cron\TaskInterface;
+use Triangle\Events\Event;
+
+class GenerateDailyReport implements TaskInterface
+{
+    public function execute()
+    {
+        $report = $this->generateReport();
+        
+        Event::dispatch(new DailyReportGenerated($report));
+    }
+}
+```
+
+## Логирование
+
+Результаты выполнения задач логируются:
+
+```php
+// config/log.php
+return [
+    'channels' => [
+        'cron' => [
+            'driver' => 'file',
+            'path' => runtime_path('logs/cron.log'),
+        ],
+    ],
+];
+```
+

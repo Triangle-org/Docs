@@ -1,0 +1,144 @@
+export const title = "Console Component";
+
+# Console Component
+
+Компонент `triangle/console` предоставляет систему консольных команд и CLI-инструментов для Triangle Framework.
+
+## Установка
+
+```bash
+composer require triangle/console
+```
+
+## Основные возможности
+
+### Встроенные команды
+
+Компонент предоставляет следующие встроенные команды:
+
+#### Управление приложением
+- `php master start` — запуск сервера
+- `php master stop` — остановка сервера
+- `php master restart` — перезапуск сервера
+- `php master status` — статус сервера
+- `php master reload` — перезагрузка конфигурации
+- `php master connections` — список подключений
+
+#### Генерация кода
+- `php master make:controller <name>` — создание контроллера
+- `php master make:model <name>` — создание модели
+- `php master make:middleware <name>` — создание middleware
+- `php master make:command <name>` — создание команды
+- `php master make:bootstrap <name>` — создание класса bootstrap
+
+#### Управление плагинами
+- `php master plugin:create <name>` — создание плагина
+- `php master plugin:install <name>` — установка плагина
+- `php master plugin:uninstall <name>` — удаление плагина
+- `php master plugin:enable <name>` — включение плагина
+- `php master plugin:disable <name>` — отключение плагина
+- `php master plugin:update <name>` — обновление плагина
+- `php master plugin:export <name>` — экспорт плагина
+
+#### Утилиты
+- `php master route:list` — список всех маршрутов
+- `php master app:create <name>` — создание нового приложения
+
+## Создание собственных команд
+
+Создайте класс команды, наследующийся от `Triangle\Console\Command`:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Triangle\Console\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class MyCommand extends Command
+{
+    protected $name = 'my:command';
+    protected $description = 'Описание команды';
+
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $output->writeln('Выполнение команды...');
+        
+        // Ваш код здесь
+        
+        return self::SUCCESS;
+    }
+}
+```
+
+Зарегистрируйте команду в конфигурации:
+
+```php
+// config/console.php
+return [
+    'commands' => [
+        \App\Console\Commands\MyCommand::class,
+    ],
+];
+```
+
+## Работа с аргументами и опциями
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Triangle\Console\Command;
+
+class ProcessCommand extends Command
+{
+    protected $name = 'process:data';
+    protected $description = 'Обработка данных';
+
+    public function configure(): void
+    {
+        $this->addArgument('file', InputArgument::REQUIRED, 'Путь к файлу');
+        $this->addOption('force', 'f', InputOption::VALUE_NONE, 'Принудительная обработка');
+    }
+
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $file = $input->getArgument('file');
+        $force = $input->getOption('force');
+        
+        // Ваш код
+        
+        return self::SUCCESS;
+    }
+}
+```
+
+## Сборка бинарных файлов
+
+### Сборка PHAR-архива
+
+```bash
+php master build:phar
+```
+
+### Сборка бинарного файла
+
+```bash
+php master build:bin
+```
+
+## Конфигурация
+
+Настройки консоли находятся в файле `config/console.php`:
+
+```php
+return [
+    'commands' => [
+        // список команд
+    ],
+];
+```
+

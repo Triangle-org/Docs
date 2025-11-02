@@ -1,0 +1,187 @@
+export const title = "Session Component";
+
+# Session Component
+
+Компонент `triangle/session` предоставляет управление сессиями пользователей.
+
+## Установка
+
+```bash
+composer require triangle/session
+```
+
+## Конфигурация
+
+Настройки в `config/session.php`:
+
+```php
+return [
+    'driver' => 'file', // file, redis, mongodb
+    
+    'lifetime' => 7200, // 2 часа (в секундах)
+    
+    'path' => runtime_path('sessions'),
+    
+    'cookie' => [
+        'name' => 'triangle_session',
+        'path' => '/',
+        'domain' => null,
+        'secure' => false,
+        'http_only' => true,
+    ],
+];
+```
+
+## Драйверы
+
+### File (по умолчанию)
+
+Сессии хранятся в файлах:
+
+```php
+'driver' => 'file',
+'path' => runtime_path('sessions'),
+```
+
+### Redis
+
+Для использования Redis установите расширение:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install php-redis
+
+# Или через PECL
+pecl install redis
+```
+
+Конфигурация:
+
+```php
+'driver' => 'redis',
+'connection' => 'default', // подключение из config/redis.php
+```
+
+### MongoDB
+
+Для использования MongoDB установите:
+
+```bash
+composer require mongodb/mongodb
+```
+
+Конфигурация:
+
+```php
+'driver' => 'mongodb',
+'connection' => 'mongodb://localhost:27017',
+'database' => 'sessions',
+'collection' => 'sessions',
+```
+
+## Использование
+
+### В контроллере
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Engine\Request;
+
+class UserController
+{
+    public function login(Request $request)
+    {
+        // Установка значения
+        $request->session()->set('user_id', 123);
+        $request->session()->set('user_name', 'John');
+        
+        return response()->json(['success' => true]);
+    }
+    
+    public function profile(Request $request)
+    {
+        // Получение значения
+        $userId = $request->session()->get('user_id');
+        
+        // Получение с значением по умолчанию
+        $userName = $request->session()->get('user_name', 'Guest');
+        
+        // Получение всех значений
+        $all = $request->session()->all();
+        
+        return response()->json([
+            'user_id' => $userId,
+            'user_name' => $userName,
+        ]);
+    }
+    
+    public function logout(Request $request)
+    {
+        // Удаление значения
+        $request->session()->delete('user_id');
+        
+        // Очистка всей сессии
+        $request->session()->flush();
+        
+        // Уничтожение сессии
+        $request->session()->destroy();
+        
+        return response()->json(['success' => true]);
+    }
+}
+```
+
+### Вспомогательные функции
+
+```php
+// Получение значения сессии
+session('key');
+
+// Установка значения
+session(['key' => 'value']);
+
+// Удаление значения
+session()->delete('key');
+
+// Проверка существования
+if (session()->has('key')) {
+    // ...
+}
+```
+
+## Flash-сообщения
+
+Flash-сообщения доступны только для одного запроса:
+
+```php
+// Установка flash-сообщения
+$request->session()->flash('message', 'Success!');
+
+// Получение flash-сообщения
+$message = $request->session()->get('message');
+
+// Flash-сообщение автоматически удаляется после прочтения
+```
+
+## Безопасность
+
+### Защита от фиксации сессии
+
+```php
+// Регенерация ID сессии
+$request->session()->regenerate();
+
+// Регенерация с удалением старой сессии
+$request->session()->regenerate(true);
+```
+
+### Ограничение времени жизни
+
+```php
+// Установка времени жизни для конкретного ключа
+$request->session()->set('key', 'value', 3600); // 1 час
+```
+

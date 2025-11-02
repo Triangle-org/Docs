@@ -1,97 +1,183 @@
-export const description =
-    'This guide will get you all set up and ready to use the Protocol API. We’ll cover how to get started an API client and how to make your first API request.'
+export const title = "Быстрый старт";
 
-# Quickstart
+# Быстрый старт
 
-This guide will get you all set up and ready to use the Protocol API. We'll cover how to get started using one of our API clients and how to make your first API request. We'll also look at where to go next to find all the information you need to take full advantage of our powerful REST API. {{ className: 'lead' }}
+Это руководство поможет вам быстро создать ваше первое приложение на Triangle Framework.
 
-<Note>
-    Before you can make requests to the Protocol API, you will need to grab your
-    API key from your dashboard. You find it under [Settings &raquo; API](#).
-</Note>
+## Установка
 
-## Choose your client
+Создайте новый проект:
 
-Before making your first API request, you need to pick which API client you will use. In addition to good ol' cURL HTTP requests, Protocol offers clients for JavaScript, Python, and PHP. In the following example, you can see how to install each client.
+```bash
+composer create-project triangle/web my-first-app
+cd my-first-app
+```
 
-<CodeGroup>
+## Запуск
 
-    ```bash {{title: 'cURL'}}
-    # cURL is most likely already installed on your machine
-    curl --version
-    ```
+Запустите приложение:
 
-    ```bash {{language: 'js'}}
-    # Install the Protocol JavaScript SDK
-    npm install @example/protocol-api --save
-    ```
+```bash
+php master start
+```
 
-    ```bash {{language: 'python'}}
-    # Install the Protocol Python SDK
-    pip install protocol_api
-    ```
+Приложение будет доступно по адресу `http://localhost:88`.
 
-    ```bash {{language: 'php'}}
-    # Install the Protocol PHP SDK
-    composer require protocol/sdk
-    ```
+## Создание первого контроллера
 
-</CodeGroup>
+Создайте файл `app/controller/Welcome.php`:
 
-<Button
-    href="/sdks"
-    variant="text"
-    arrow="right"
-    children="Check out our list of first-party SDKs"
-/>
+```php
+<?php
 
-## Making your first API request
+namespace App\Controller;
 
-After picking your preferred client, you are ready to make your first call to the Protocol API. Below, you can see how to send a GET request to the Conversations endpoint to get a list of all your conversations. In the cURL example, results are limited to ten conversations, the default page length for each client.
+use Triangle\Engine\Request;
+use Triangle\View\View;
 
-<CodeGroup tag="GET" label="/v1/conversations">
+class Welcome
+{
+    public function index(Request $request)
+    {
+        return View::render('welcome', [
+            'message' => 'Hello, Triangle!',
+        ]);
+    }
+}
+```
 
-    ```bash {{title: 'cURL'}}
-    curl -G https://api.protocol.chat/v1/conversations \
-    -H "Authorization: Bearer {token}" \
-    -d limit=10
-    ```
+## Создание представления
 
-    ```js
-    import ApiClient from '@example/protocol-api'
+Создайте файл `app/view/welcome.phtml`:
 
-    const client = new ApiClient(token)
+```php
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+    <h1><?= htmlspecialchars($message) ?></h1>
+</body>
+</html>
+```
 
-    await client.conversations.list()
-    ```
+## Определение маршрута
 
-    ```python
-    from protocol_api import ApiClient
+Обновите `config/route.php`:
 
-    client = ApiClient(token)
+```php
+use Triangle\Router\Route;
 
-    client.conversations.list()
-    ```
+return [
+    Route::get('/', [\App\Controller\Welcome::class, 'index']),
+];
+```
 
-    ```php
-    $client = new \Protocol\ApiClient($token);
+## Работа с базой данных
 
-    $client->conversations->list();
-    ```
+### Настройка подключения
 
-</CodeGroup>
+Обновите `config/database.php`:
 
-<Button
-    href="/conversations"
-    variant="text"
-    arrow="right"
-    children="Read the docs for the Conversations endpoint"
-/>
+```php
+return [
+    'default' => 'mysql',
+    'connections' => [
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => '127.0.0.1',
+            'database' => 'myapp',
+            'username' => 'root',
+            'password' => '',
+        ],
+    ],
+];
+```
 
-## What's next?
+### Создание модели
 
-Great, you're now set up with an API client and have made your first request to the API. Here are a few links that might be handy as you venture further into the Protocol API:
+Создайте `app/model/User.php`:
 
-- [Grab your API key from the Protocol dashboard](#)
-- [Check out the Conversations endpoint](/conversations)
-- [Learn about the different error messages in Protocol](/errors)
+```php
+<?php
+
+namespace App\Model;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+}
+```
+
+### Использование в контроллере
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Model\User;
+use Triangle\Engine\Request;
+
+class UserController
+{
+    public function index()
+    {
+        $users = User::all();
+        return response()->json($users);
+    }
+}
+```
+
+## API-эндпоинт
+
+Создайте простой API:
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Model\User;
+use Triangle\Engine\Request;
+use Triangle\Engine\Response;
+
+class ApiController
+{
+    public function users()
+    {
+        $users = User::all();
+        return Response::json($users);
+    }
+    
+    public function create(Request $request)
+    {
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+        ]);
+        
+        return Response::json($user, 201);
+    }
+}
+```
+
+Добавьте маршруты:
+
+```php
+use Triangle\Router\Route;
+
+return [
+    Route::get('/api/users', [\App\Controller\ApiController::class, 'users']),
+    Route::post('/api/users', [\App\Controller\ApiController::class, 'create']),
+];
+```
+
+## Следующие шаги
+
+- Изучите [документацию по архитектуре](/architecture)
+- Ознакомьтесь с [компонентами](/components)
+- Изучите [руководство по Web Framework](/frameworks/web)

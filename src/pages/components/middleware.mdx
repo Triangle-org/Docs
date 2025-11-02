@@ -1,0 +1,159 @@
+export const title = "Middleware Component";
+
+# Middleware Component
+
+Компонент `triangle/middleware` предоставляет систему промежуточного ПО для обработки запросов.
+
+## Установка
+
+```bash
+composer require triangle/middleware
+```
+
+## Создание Middleware
+
+Создайте класс middleware:
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+
+class AuthMiddleware implements MiddlewareInterface
+{
+    public function process(Request $request, callable $next)
+    {
+        // Проверка аутентификации
+        if (!$request->session()->get('user_id')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Передача управления следующему middleware
+        return $next($request);
+    }
+}
+```
+
+## Регистрация Middleware
+
+### Глобальный Middleware
+
+В `config/middleware.php`:
+
+```php
+return [
+    'global' => [
+        \App\Middleware\CorsMiddleware::class,
+        \App\Middleware\LoggingMiddleware::class,
+    ],
+];
+```
+
+### Маршрутный Middleware
+
+Используйте аннотации в контроллерах:
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Annotation\Middleware;
+use Triangle\Engine\Request;
+
+#[Middleware(\App\Middleware\AuthMiddleware::class)]
+class UserController
+{
+    public function index(Request $request)
+    {
+        // ...
+    }
+}
+```
+
+### Групповой Middleware
+
+В маршрутах:
+
+```php
+use Triangle\Router\Route;
+
+Route::group(['middleware' => \App\Middleware\AuthMiddleware::class], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/profile', [ProfileController::class, 'show']);
+});
+```
+
+## Цепочка Middleware
+
+Middlewares выполняются последовательно:
+
+```php
+// config/middleware.php
+return [
+    'global' => [
+        \App\Middleware\CorsMiddleware::class,      // 1
+        \App\Middleware\LoggingMiddleware::class, // 2
+        \App\Middleware\AuthMiddleware::class,     // 3
+    ],
+];
+```
+
+## Примеры Middleware
+
+### CORS Middleware
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+
+class CorsMiddleware implements MiddlewareInterface
+{
+    public function process(Request $request, callable $next)
+    {
+        $response = $next($request);
+        
+        $response->header('Access-Control-Allow-Origin', '*');
+        $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        
+        return $response;
+    }
+}
+```
+
+### Rate Limiting
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+use Triangle\Support\Cache;
+
+class RateLimitMiddleware implements MiddlewareInterface
+{
+    public function process(Request $request, callable $next)
+    {
+        $key = 'rate_limit:' . $request->getRealIp();
+        $count = Cache::get($key, 0);
+        
+        if ($count >= 100) {
+            return response()->json(['error' => 'Too many requests'], 429);
+        }
+        
+        Cache::set($key, $count + 1, 60); // 60 секунд
+        
+        return $next($request);
+    }
+}
+```
+

@@ -1,0 +1,185 @@
+export const title = "Плагины";
+
+# Плагины Triangle Framework
+
+Плагины — это дополнительные модули расширения, которые можно легко подключать к приложению. Они расширяют функциональность фреймворка без изменения ядра.
+
+## Доступные плагины
+
+### OAuth (`triangle/oauth`)
+
+Мощный плагин для OAuth-аутентификации с поддержкой множества провайдеров.
+
+**Поддерживаемые провайдеры:**
+- Google, Facebook, Twitter, Apple
+- GitHub, GitLab, Bitbucket
+- Discord, Slack, Telegram
+- VKontakte, Yandex, Mail.ru
+- И многие другие (50+ провайдеров)
+
+**Установка:**
+```bash
+composer require triangle/oauth
+```
+
+**Документация:** [OAuth Plugin](/plugins/oauth)
+
+### Media (`triangle/media`)
+
+Плагин для обработки медиа-файлов (изображения, видео и др.).
+
+**Основные возможности:**
+- Обработка изображений через ImageMagick
+- Ресайз и обрезка изображений
+- Конвертация форматов
+- Оптимизация размера файлов
+
+**Установка:**
+```bash
+composer require triangle/media
+```
+
+**Требования:** `ext-imagick`
+
+**Документация:** [Media Plugin](/plugins/media)
+
+### Pusher (`triangle/pusher`)
+
+Система push-уведомлений для real-time приложений.
+
+**Возможности:**
+- Отправка push-уведомлений
+- Управление подписками
+- Интеграция с различными сервисами
+
+**Установка:**
+```bash
+composer require triangle/pusher
+```
+
+**Документация:** [Pusher Plugin](/plugins/pusher)
+
+### MultiConnect (`triangle/multiconnect`)
+
+Шлюз для множественных подключений, основанный на Gateway Worker.
+
+**Возможности:**
+- Распределение соединений между процессами
+- Горизонтальное масштабирование
+- Управление множественными подключениями
+
+**Установка:**
+```bash
+composer require triangle/multiconnect
+```
+
+**Требования:** `workerman/gateway-worker >= 3.0`
+
+**Документация:** [MultiConnect Plugin](/plugins/multiconnect)
+
+## Установка плагинов
+
+Плагины устанавливаются через Composer и автоматически регистрируются системой:
+
+```bash
+composer require triangle/oauth
+```
+
+После установки плагин становится доступен через систему плагинов Engine.
+
+## Управление плагинами
+
+Используйте консольные команды для управления плагинами:
+
+```bash
+# Просмотр установленных плагинов
+php master plugin:list
+
+# Включение плагина
+php master plugin:enable triangle/oauth
+
+# Отключение плагина
+php master plugin:disable triangle/oauth
+
+# Обновление плагина
+php master plugin:update triangle/oauth
+
+# Удаление плагина
+php master plugin:uninstall triangle/oauth
+```
+
+## Создание собственного плагина
+
+### Структура плагина
+
+```
+plugin-name/
+├── composer.json
+├── src/
+│   ├── Plugin.php
+│   └── ...
+├── config/
+│   └── plugin.php
+└── Install.php
+```
+
+### composer.json
+
+```json
+{
+    "name": "vendor/plugin-name",
+    "type": "triangle-plugin",
+    "autoload": {
+        "psr-4": {
+            "Vendor\\PluginName\\": "src/"
+        }
+    },
+    "extra": {
+        "triangle-plugin": {
+            "name": "plugin-name",
+            "namespace": "Vendor\\PluginName"
+        }
+    }
+}
+```
+
+### Plugin.php
+
+```php
+<?php
+
+namespace Vendor\PluginName;
+
+use Triangle\Engine\Plugin;
+
+class Plugin extends Plugin
+{
+    public static function install(): void
+    {
+        // Логика установки
+    }
+
+    public static function uninstall(): void
+    {
+        // Логика удаления
+    }
+
+    public static function update(): void
+    {
+        // Логика обновления
+    }
+}
+```
+
+## Конфигурация плагинов
+
+Каждый плагин может иметь свой файл конфигурации в папке `config/plugins/`:
+
+```php
+// config/plugins/plugin-name.php
+return [
+    'enabled' => true,
+    // другие настройки
+];
+```
+

@@ -1,0 +1,143 @@
+export const title = "Router Component";
+
+# Router Component
+
+Компонент `triangle/router` предоставляет мощную систему маршрутизации с поддержкой различных алгоритмов диспетчеризации.
+
+## Установка
+
+```bash
+composer require triangle/router
+```
+
+## Базовое использование
+
+### Определение маршрутов
+
+Маршруты определяются в файле `config/route.php`:
+
+```php
+<?php
+
+use Triangle\Router\Route;
+
+return [
+    Route::get('/', [\App\Controller\Index::class, 'index']),
+    Route::post('/api/users', [\App\Controller\User::class, 'create']),
+    Route::get('/users/{id}', [\App\Controller\User::class, 'show']),
+];
+```
+
+### HTTP-методы
+
+Поддерживаются все стандартные HTTP-методы:
+
+```php
+Route::get('/users', [UserController::class, 'index']);
+Route::post('/users', [UserController::class, 'store']);
+Route::put('/users/{id}', [UserController::class, 'update']);
+Route::patch('/users/{id}', [UserController::class, 'update']);
+Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::options('/users', [UserController::class, 'options']);
+
+// Любой метод
+Route::any('/path', [Controller::class, 'method']);
+```
+
+### Параметры маршрутов
+
+```php
+// Обязательный параметр
+Route::get('/user/{id}', [UserController::class, 'show']);
+
+// Необязательный параметр
+Route::get('/user/{id?}', [UserController::class, 'show']);
+
+// Параметр с ограничениями (регулярное выражение)
+Route::get('/user/{id}', [UserController::class, 'show'])
+    ->where(['id' => '[0-9]+']);
+
+// Несколько параметров
+Route::get('/posts/{post}/comments/{comment}', [CommentController::class, 'show']);
+```
+
+### Именованные маршруты
+
+```php
+Route::get('/user/{id}', [UserController::class, 'show'])
+    ->name('user.show');
+
+// Генерация URL
+$url = route('user.show', ['id' => 123]);
+```
+
+## Группировка маршрутов
+
+### Префикс
+
+```php
+Route::group(['prefix' => 'api'], function () {
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/posts', [PostController::class, 'index']);
+});
+```
+
+### Middleware
+
+```php
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/profile', [ProfileController::class, 'show']);
+});
+```
+
+### Комбинация
+
+```php
+Route::group([
+    'prefix' => 'api',
+    'middleware' => ['auth', 'api']
+], function () {
+    Route::get('/users', [UserController::class, 'index']);
+});
+```
+
+## Алгоритмы диспетчеризации
+
+Router поддерживает несколько алгоритмов для оптимизации производительности:
+
+- **Mark-based** — самый быстрый для маршрутов с параметрами
+- **Group-based** — оптимален для большого количества маршрутов
+- **CharCount-based** — эффективен для маршрутов с различной длиной
+- **GroupPos-based** — комбинированный подход
+
+Алгоритм выбирается автоматически, но может быть настроен в конфигурации.
+
+## Конфигурация
+
+Настройки роутера находятся в `config/route.php`:
+
+```php
+return [
+    // Настройки алгоритма диспетчеризации
+    'dispatcher' => 'mark', // mark, group, char-count, group-pos
+    
+    // Кэширование маршрутов
+    'cache' => true,
+    'cache_file' => runtime_path('routes.php'),
+];
+```
+
+## Вспомогательные функции
+
+```php
+// Генерация URL
+route('user.show', ['id' => 123]);
+
+// Текущий маршрут
+current_route();
+
+// Проверка активного маршрута
+is_route('user.show');
+```
+

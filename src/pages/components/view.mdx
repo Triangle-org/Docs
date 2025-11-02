@@ -1,0 +1,173 @@
+export const title = "View Component";
+
+# View Component
+
+Компонент `triangle/view` предоставляет систему шаблонизации с поддержкой различных движков рендеринга.
+
+## Установка
+
+```bash
+composer require triangle/view
+```
+
+## Поддерживаемые движки
+
+- **Twig** — популярный шаблонизатор для PHP
+- **Blade** — шаблонизатор из Laravel
+- **ThinkPHP Template** — шаблонизатор из ThinkPHP
+
+### Установка движков
+
+```bash
+# Twig
+composer require twig/twig
+
+# Blade
+composer require jenssegers/blade
+
+# ThinkPHP Template
+composer require topthink/think-template
+```
+
+## Конфигурация
+
+Настройки в `config/view.php`:
+
+```php
+return [
+    'engine' => 'twig', // twig, blade, think
+    
+    'path' => [
+        app_path('view'),
+        base_path('view'),
+    ],
+    
+    'cache' => runtime_path('views'),
+];
+```
+
+## Базовое использование
+
+### Рендеринг шаблона
+
+```php
+use Triangle\View\View;
+
+// Рендеринг шаблона
+$html = View::render('index', [
+    'title' => 'My Page',
+    'users' => $users,
+]);
+
+// Возврат ответа
+return response()->html($html);
+```
+
+### В контроллере
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Engine\Request;
+use Triangle\View\View;
+
+class IndexController
+{
+    public function index(Request $request)
+    {
+        return View::render('index', [
+            'title' => 'Home Page',
+        ]);
+    }
+}
+```
+
+## Twig
+
+### Пример шаблона
+
+```twig
+<!-- view/index.twig -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    
+    {% for user in users %}
+        <div>{{ user.name }}</div>
+    {% endfor %}
+</body>
+</html>
+```
+
+### Расширенные возможности
+
+```twig
+{# Наследование #}
+{% extends "base.twig" %}
+
+{# Блоки #}
+{% block content %}
+    <h1>{{ title }}</h1>
+{% endblock %}
+
+{# Включения #}
+{% include "header.twig" %}
+
+{# Условия #}
+{% if user %}
+    <p>Hello, {{ user.name }}!</p>
+{% endif %}
+```
+
+## Blade
+
+### Пример шаблона
+
+```blade
+<!-- view/index.blade.php -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ $title }}</title>
+</head>
+<body>
+    <h1>{{ $title }}</h1>
+    
+    @foreach($users as $user)
+        <div>{{ $user->name }}</div>
+    @endforeach
+</body>
+</html>
+```
+
+### Компоненты
+
+```blade
+<!-- Компонент -->
+@component('components.alert')
+    @slot('title')
+        Alert Title
+    @endslot
+    
+    This is the alert message.
+@endcomponent
+```
+
+## Вспомогательные функции
+
+```php
+// Получение пути к шаблону
+view_path('index');
+
+// Проверка существования шаблона
+if (View::exists('index')) {
+    // ...
+}
+```
+

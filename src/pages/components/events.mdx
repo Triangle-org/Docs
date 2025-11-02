@@ -1,0 +1,147 @@
+export const title = "Events Component";
+
+# Events Component
+
+Компонент `triangle/events` предоставляет систему событий для реализации паттерна Observer.
+
+## Установка
+
+```bash
+composer require triangle/events
+```
+
+## Конфигурация
+
+Настройки в `config/event.php`:
+
+```php
+return [
+    'listeners' => [
+        // Слушатели событий
+    ],
+];
+```
+
+## Использование
+
+### Определение события
+
+```php
+<?php
+
+namespace App\Events;
+
+class UserRegistered
+{
+    public function __construct(
+        public $user
+    ) {}
+}
+```
+
+### Слушатель события
+
+```php
+<?php
+
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+use Triangle\Events\ListenerInterface;
+
+class SendWelcomeEmail implements ListenerInterface
+{
+    public function handle(UserRegistered $event)
+    {
+        // Отправка приветственного письма
+        mail($event->user->email, 'Welcome!', 'Thanks for registering!');
+    }
+}
+```
+
+### Регистрация слушателя
+
+В `config/event.php`:
+
+```php
+return [
+    'listeners' => [
+        \App\Events\UserRegistered::class => [
+            \App\Listeners\SendWelcomeEmail::class,
+            \App\Listeners\CreateUserProfile::class,
+        ],
+    ],
+];
+```
+
+### Генерация события
+
+```php
+use Triangle\Events\Event;
+use App\Events\UserRegistered;
+
+// Генерация события
+Event::dispatch(new UserRegistered($user));
+
+// Или через вспомогательную функцию
+event(new UserRegistered($user));
+```
+
+## Примеры использования
+
+### Регистрация пользователя
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Events\UserRegistered;
+use App\Model\User;
+use Triangle\Engine\Request;
+use Triangle\Events\Event;
+
+class RegisterController
+{
+    public function register(Request $request)
+    {
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+        ]);
+        
+        // Генерация события
+        Event::dispatch(new UserRegistered($user));
+        
+        return response()->json(['success' => true]);
+    }
+}
+```
+
+### Множественные слушатели
+
+```php
+// config/event.php
+return [
+    'listeners' => [
+        \App\Events\OrderCreated::class => [
+            \App\Listeners\SendOrderConfirmation::class,
+            \App\Listeners\UpdateInventory::class,
+            \App\Listeners\NotifyAdmin::class,
+        ],
+    ],
+];
+```
+
+## Вспомогательные функции
+
+```php
+// Генерация события
+event(new UserRegistered($user));
+
+// Проверка наличия слушателей
+if (Event::hasListeners(UserRegistered::class)) {
+    // ...
+}
+```
+

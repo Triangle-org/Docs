@@ -1,0 +1,286 @@
+export const title = "Web Framework";
+
+# Triangle Web Framework
+
+`triangle/web` — это полнофункциональный HTTP-фреймворк на основе Triangle Engine, предоставляющий MVC-архитектуру для разработки веб-приложений.
+
+## Установка
+
+```bash
+composer create-project triangle/web my-app
+cd my-app
+```
+
+## Структура проекта
+
+```
+my-app/
+├── app/
+│   ├── controller/     # Контроллеры
+│   ├── middleware/     # Middleware
+│   ├── model/          # Модели
+│   └── view/           # Представления
+├── config/             # Конфигурация
+├── public/             # Публичная директория
+├── runtime/            # Временные файлы
+└── master              # Скрипт запуска
+```
+
+## Запуск
+
+```bash
+# Разработка
+php master start
+
+# Production (в фоне)
+php master start -d
+
+# Остановка
+php master stop
+
+# Перезапуск
+php master restart
+
+# Статус
+php master status
+```
+
+По умолчанию приложение запускается на порту `88` и доступно по адресу `http://localhost:88`.
+
+## Конфигурация
+
+### Основные настройки
+
+`config/app.php`:
+
+```php
+return [
+    'name' => 'My App',
+    'debug' => true,
+    'timezone' => 'Europe/Moscow',
+];
+```
+
+### Сервер
+
+`config/server.php`:
+
+```php
+return [
+    'listen' => 'http://0.0.0.0:88',
+    'processes' => 4,
+    'name' => 'Triangle',
+];
+```
+
+## Создание контроллера
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Triangle\Engine\Request;
+use Triangle\View\View;
+
+class IndexController
+{
+    public function index(Request $request)
+    {
+        return View::render('index', [
+            'title' => 'Home Page',
+        ]);
+    }
+}
+```
+
+## Маршрутизация
+
+Определите маршруты в `config/route.php`:
+
+```php
+use Triangle\Router\Route;
+
+return [
+    Route::get('/', [\App\Controller\IndexController::class, 'index']),
+    Route::get('/users/{id}', [\App\Controller\UserController::class, 'show']),
+];
+```
+
+## Работа с базой данных
+
+### Конфигурация
+
+`config/database.php`:
+
+```php
+return [
+    'default' => 'mysql',
+    'connections' => [
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => '127.0.0.1',
+            'database' => 'myapp',
+            'username' => 'user',
+            'password' => 'password',
+        ],
+    ],
+];
+```
+
+### Использование
+
+```php
+use Triangle\Database\DB;
+
+$users = DB::table('users')->get();
+```
+
+## Пример приложения
+
+### Контроллер
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Model\User;
+use Triangle\Engine\Request;
+use Triangle\View\View;
+
+class UserController
+{
+    public function index()
+    {
+        $users = User::all();
+        return View::render('users/index', compact('users'));
+    }
+    
+    public function show(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        return View::render('users/show', compact('user'));
+    }
+}
+```
+
+### Модель
+
+```php
+<?php
+
+namespace App\Model;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+    protected $fillable = ['name', 'email'];
+}
+```
+
+### Представление
+
+```php
+<!-- app/view/users/index.phtml -->
+<h1>Users</h1>
+<ul>
+    <?php foreach ($users as $user): ?>
+        <li><?= htmlspecialchars($user->name) ?></li>
+    <?php endforeach; ?>
+</ul>
+```
+
+## API-ответы
+
+```php
+use Triangle\Engine\Response;
+
+// JSON-ответ
+return Response::json(['users' => $users]);
+
+// Успешный ответ
+return Response::success($data);
+
+// Ошибка
+return Response::error('Not found', 404);
+```
+
+## Middleware
+
+Создайте middleware:
+
+```php
+<?php
+
+namespace App\Middleware;
+
+use Triangle\Engine\Request;
+use Triangle\Middleware\MiddlewareInterface;
+
+class AuthMiddleware implements MiddlewareInterface
+{
+    public function process(Request $request, callable $next)
+    {
+        if (!session()->get('user_id')) {
+            return Response::error('Unauthorized', 401);
+        }
+        
+        return $next($request);
+    }
+}
+```
+
+Зарегистрируйте в `config/middleware.php`:
+
+```php
+return [
+    'global' => [
+        \App\Middleware\AuthMiddleware::class,
+    ],
+];
+```
+
+## Статические файлы
+
+Настройка в `config/static.php`:
+
+```php
+return [
+    'enable' => true,
+    'path' => public_path(),
+];
+```
+
+Статические файлы автоматически отдаются из папки `public/`.
+
+## Развертывание
+
+### Production
+
+1. Установите зависимости:
+```bash
+composer install --no-dev --optimize-autoloader
+```
+
+2. Настройте конфигурацию:
+```php
+// config/app.php
+'debug' => false,
+```
+
+3. Запустите в фоновом режиме:
+```bash
+php master start -d
+```
+
+### Docker
+
+Используйте `docker-compose.yml` из проекта:
+
+```bash
+docker-compose up -d
+```
+

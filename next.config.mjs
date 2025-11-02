@@ -20,6 +20,11 @@ const nextConfig = {
     experimental: {
         scrollRestoration: true,
     },
+    output: 'export',
+    images: {
+        unoptimized: true,
+    },
+    trailingSlash: false,
 }
 
 export default withSearch(withMDX(nextConfig))

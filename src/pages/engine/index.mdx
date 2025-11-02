@@ -1,0 +1,226 @@
+export const title = "Engine - Ядро фреймворка";
+
+# Triangle Engine
+
+`triangle/engine` — это ядро Triangle Framework, предоставляющее базовую функциональность для всех компонентов и приложений.
+
+## Установка
+
+```bash
+composer require triangle/engine
+```
+
+## Основные компоненты
+
+### App
+
+Абстрактный класс приложения, наследующийся от `localzet\ServerAbstract`.
+
+```php
+<?php
+
+namespace App;
+
+use Triangle\Engine\App as EngineApp;
+
+class App extends EngineApp
+{
+    // Переопределите методы для настройки приложения
+}
+```
+
+### Container
+
+Контейнер зависимостей (DI Container) для управления зависимостями приложения.
+
+```php
+use Triangle\Engine\Container;
+
+// Регистрация сервиса
+Container::set('service', function() {
+    return new MyService();
+});
+
+// Получение сервиса
+$service = Container::get('service');
+
+// Проверка существования
+if (Container::has('service')) {
+    // ...
+}
+```
+
+### Config
+
+Система конфигурации для работы с настройками приложения.
+
+```php
+use Triangle\Engine\Config;
+
+// Получение значения
+$value = Config::get('app.name');
+
+// Получение с значением по умолчанию
+$value = Config::get('app.debug', false);
+
+// Установка значения
+Config::set('app.name', 'My App');
+
+// Перезагрузка конфигурации
+Config::reload();
+
+// Вспомогательная функция
+config('app.name');
+```
+
+### Request & Response
+
+Классы для работы с запросами и ответами.
+
+```php
+use Triangle\Engine\Request;
+use Triangle\Engine\Response;
+
+// Работа с запросом
+$request = Request::current();
+
+// Получение данных запроса
+$input = $request->input('key');
+$header = $request->header('Content-Type');
+
+// Работа с ответом
+Response::success($data);
+Response::error($message, $code);
+Response::json($data);
+```
+
+### Exception Handling
+
+Система обработки исключений.
+
+```php
+use Triangle\Exception\NotFoundException;
+use Triangle\Exception\BusinessException;
+
+// Выброс исключений
+throw new NotFoundException('Resource not found');
+throw new BusinessException('Business logic error');
+
+// Кастомный обработчик исключений
+use Triangle\Exception\ExceptionHandlerInterface;
+
+class MyExceptionHandler implements ExceptionHandlerInterface
+{
+    public function handle($exception)
+    {
+        // Обработка исключения
+    }
+}
+```
+
+## Структура проекта
+
+```
+app/
+├── controller/     # Контроллеры
+├── middleware/     # Middleware
+├── model/          # Модели
+└── view/           # Представления
+
+config/             # Файлы конфигурации
+├── app.php
+├── bootstrap.php
+├── container.php
+└── ...
+
+public/             # Публичная директория
+
+runtime/            # Временные файлы
+├── logs/           # Логи
+├── sessions/       # Сессии
+└── views/          # Скомпилированные представления
+```
+
+## Автозагрузка
+
+Система автозагрузки автоматически загружает классы из компонентов и плагинов:
+
+```php
+use Triangle\Engine\Autoload;
+
+// Запуск автозагрузки
+Autoload::start();
+```
+
+## Bootstrap
+
+Система инициализации компонентов:
+
+```php
+use Triangle\Engine\Bootstrap;
+
+// Запуск bootstrap
+Bootstrap::start();
+```
+
+Компоненты автоматически регистрируются через свои классы Bootstrap.
+
+## Плагины
+
+### Установка плагина
+
+Плагины устанавливаются автоматически при установке через Composer:
+
+```bash
+composer require vendor/plugin-name
+```
+
+### Управление плагинами
+
+```php
+use Triangle\Engine\Plugin;
+
+// Получение конфигурации плагина
+$config = Plugin::getPluginConfig('plugin-name');
+
+// Проверка установки
+if (Plugin::isInstalled('plugin-name')) {
+    // ...
+}
+```
+
+## Вспомогательные функции
+
+Engine предоставляет множество вспомогательных функций:
+
+```php
+// Пути
+base_path();        // Корневая директория
+app_path();         // Директория приложения
+config_path();      // Директория конфигурации
+public_path();      // Публичная директория
+runtime_path();     // Директория временных файлов
+
+// Конфигурация
+config('key');      // Получение значения конфигурации
+
+// Логирование
+Log::info('message');
+Log::warning('message');
+Log::error('message');
+
+// Кэширование
+Cache::get('key');
+Cache::set('key', 'value');
+Cache::delete('key');
+```
+
+## Конфигурация
+
+Основные файлы конфигурации:
+
+- `config/app.php` — настройки приложения
+- `config/bootstrap.php` — классы для инициализации
+- `config/container.php` — настройки контейнера зависимостей
+- `config/log.php` — настройки логирования
+
