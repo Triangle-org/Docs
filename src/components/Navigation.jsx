@@ -189,6 +189,7 @@ export const navigation = [
             {title: 'Быстрый старт', href: '/quickstart'},
             {title: 'Архитектура', href: '/architecture'},
             {title: 'Установка', href: '/install'},
+            {title: 'Безопасность', href: '/security'},
         ],
     },
     {
