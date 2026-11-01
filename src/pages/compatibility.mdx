@@ -1,0 +1,68 @@
+# Совместимость пакетов Triangle
+
+Эта страница фиксирует **снимок объявленных зависимостей в checkout от 1 ноября 2026 года**. Это не обещание совместимости релизов: фактическую совместимость подтверждают только согласованные lock-файлы, установка и тесты совместно работающих пакетов.
+
+## Базовые поколения
+
+| Пакет / роль | Composer package | PHP constraint | Объявленные зависимости | Состояние lock в checkout |
+| --- | --- | --- | --- | --- |
+| Localzet Server (внешний runtime) | `localzet/server` | `>=8.1` | `ext-json`; event loop, Redis, sockets и другие возможности optional | версия в репозитории Server не задаёт версию Triangle |
+| Engine | `triangle/engine` | `^8.1` | `ext-intl`, `ext-json`, Localzet Server 4, Monolog 2, PSR Container 1 или 2, Symfony Translation/Cache 6.4 | lock обновлён; runtime deps проверены отдельно |
+| HTTP Engine | `triangle/engine-http` | `^8.1` | Engine 8, Router 2, Middleware 2, ext-curl; конфликтует с `triangle/engine-ws` | lock содержит текущие Triangle 8/2 зависимости |
+| WebSocket Engine | `triangle/engine-ws` | `^8.1` | Engine 8.1, Router 2, Middleware 2; конфликтует с `triangle/engine-http` | lock содержит текущие Triangle 8/2 зависимости |
+| Router | `triangle/router` | `^8.1` | Engine `^8.1` | lock обновлён; пакет установлен во временный vendor для проверки |
+| Middleware | `triangle/middleware` | `^8.1` | Router 2, Engine 8.1 | lock обновлён; runtime deps разрешаются |
+| Database | `triangle/database` | `^8.2` | Engine 8.1, Illuminate 11, Symfony VarDumper 7 | lock обновлён; Illuminate 11.51 |
+| Session | `triangle/session` | `^8.1` | Engine 8.1 | lock обновлён; runtime deps разрешаются |
+| View | `triangle/view` | `^8.1` | Engine 8.1; Rector и PHPStan — dev requirements | lock обновлён; runtime deps разрешаются |
+| Events | `triangle/events` | `^8.1` | Engine 8.1 | lock обновлён; runtime deps разрешаются |
+| Cron | `triangle/cron` | `^8.1` | Engine 8.1, Events 1, Localzet Cron 1 | lock обновлён; runtime deps разрешаются |
+| Console | `triangle/console` | `^8.2` | Localzet Console 1.1, Engine 8.1, Symfony Console/Process 7.1 | lock обновлён; Symfony 7.4 |
+| Web application (`Web`) | `triangle/web` | `^8.2` | Engine 8.1, HTTP Engine 2, Console 1.3, Database 1, Session 1, View 2, Events 1, Symfony Console 7 | lock обновлён; Triangle packages разрешены в заявленных диапазонах |
+| Web application (`Web-Managed`) | `triangle/web` | `^8.2` | Engine 8, HTTP Engine 2, Console 1.3, Database 1, Session 1, View 1.1, Events 1, Symfony Console 7 | lock обновлён; это отдельный вариант сборки с собственными ограничениями |
+| Full (панель приложения, проект) | `triangle/web` | `^8.2` | те же основные компоненты, что `Web`, плюс отдельные assets/build tooling | Composer lock разрешён локально, но не отслеживался Git; Yarn lock не обновлён из-за недоступности npm registry. Пакетное имя совпадает с `Web` |
+| WebSocket application | `triangle/ws` | `^8.2` | Engine 8.1, WS Engine 1.1, Console 1.3, Database 1, Events 1, Symfony Console 7 | lock обновлён; WS Engine 1.1.1 |
+| Maestro (управляющая среда, проект) | `triangle/web` | `^8.2` | Engine `6.x-dev` | legacy lock; source не разрешает зависимость. Текущая конфигурация запускает несколько app listeners, но ещё не подтверждает функции reverse proxy или изоляции |
+| Metronic (архив) | `triangle/web` | `^8.2` | Engine 5.3, Illuminate 10 | архивное поколение; исключено из актуального release train |
+
+Плагины и legacy приложения имеют собственные требования; их нельзя автоматически считать частью текущего Web/WS train:
+
+| Пакет | Заявленные зависимости | Примечание |
+| --- | --- | --- |
+| `triangle/oauth` | PHP `^8.2`, ext-mbstring/json/curl, `localzet/http ^2`, `triangle/engine ^8.1` | Response использует `Triangle\Engine\Response`; Composer lock обновлён. Runtime-проверка плагина не проводилась |
+| `triangle/media` | PHP `^8.1`, Engine 8.1, ext-imagick | lock разрешён с пропуском локальной проверки ext-imagick; расширение недоступно, поэтому runtime не проверен |
+| `triangle/pusher` | PHP `^8.1`, Engine `^8.1`, Router `^2.0` | конфиг отключён по умолчанию; `Api` и полноценная обработка push-событий не реализованы, не считать рабочим компонентом |
+| `triangle/multiconnect` | PHP `^8.1`, `localzet/server ^4.5` | переведён на Localzet Server; handler подключается явно, реестр ограничен процессом, broker и распределённый broadcast не входят в пакет |
+
+## Что сейчас подтверждено
+
+- Текущая линия выполнения Triangle состоит из HTTP `Web` и realtime `WS` tracks. `Full` — шаблон административной панели, `Maestro` — прототип управления несколькими приложениями; это отдельные продуктовые направления, а не дополнительные execution tracks.
+- Server — нижележащий асинхронный runtime. Его PHP API нельзя смешивать с версиями пакетов Triangle.
+- Locks основных компонентов, HTTP/WS движков и Web/WS сборок пересозданы из текущих manifests. Это подтверждает разрешимость зависимостей, но не совместимость поведения на runtime.
+- Локальные vendor-директории в NTFS/FUSE checkout не используются для проверки; пакеты ставились во временные каталоги. Для `Plugin-Media` и legacy плагинов установка/runtime не подтверждены.
+- Прямое использование библиотек вне Triangle — цель совместимости, но не каждый текущий пакет независим от Engine: например, Router и Middleware объявляют Engine в `require`. Для standalone use необходимо отдельно определить минимальные контракты и адаптеры.
+- `Maestro` задуман как управляющая среда для нескольких приложений на Triangle/Localzet Server. В проверенной реализации есть несколько listener-конфигураций и монитор файлов/памяти; reverse proxy, upstream routing, health checks, независимая перезагрузка и resource isolation этим checkout не подтверждены. Смотрите отдельный README Maestro.
+- `Full` содержит frontend-шаблон административной панели и базовый Triangle application example. Наличие экранов интерфейса не означает готовые CRUD, аутентификацию, роли или backend панели. Пакетный identity пока совпадает с `triangle/web`.
+- `Metronic` — архивная сборка старого поколения и не входит в поддерживаемую матрицу.
+- Манифесты `triangle/engine-http` и `triangle/engine-ws` явно объявляют взаимный Composer `conflict: "*"`; их нельзя установить вместе в один Composer dependency graph. Это закрепляет отдельные application tracks на уровне пакетов. Вопрос об использовании отдельных приложений/процессов на одном Localzet Server deployment — отдельная эксплуатационная архитектура.
+
+## Границы поколений
+
+Не смешивайте `Engine 5/6/7/8`, `Router/Middleware 1/2` и Web/WS templates по совпадению namespace. До стабилизации release train используйте lock-файл конкретного приложения и проверяйте, что его прямые и транзитивные зависимости удовлетворяют всем constraints.
+
+Матрица остаётся снимком Composer-контрактов, пока не пройдены интеграционные проверки `Server → Engine → HTTP/WS Engine → framework`. `Pusher` остаётся незавершённым прототипом. OAuth декларирует Triangle Engine, но совместимость интеграции требует runtime-проверки.
+
+## Предложение по идентификаторам проектов
+
+Несколько независимых project checkouts сейчас объявляют `name: triangle/web`. Это не меняет runtime API, но затрудняет навигацию, отчёты зависимостей, Packagist metadata и понимание lock-файлов. Для root-проектов предлагается такая схема:
+
+| Checkout | Текущий Composer name | Предлагаемый name | Роль |
+| --- | --- | --- | --- |
+| `Web` | `triangle/web` | `triangle/web` | Канонический HTTP application template |
+| `Web-Managed` | `triangle/web` | `triangle/web-managed` | Вариант Web с управляемой конфигурацией |
+| `Full` | `triangle/web` | `triangle/full` | Панель административного интерфейса для Triangle-приложений |
+| `Maestro` | `triangle/web` | `triangle/maestro` | Управляющая среда для нескольких приложений |
+| `Ws` | `triangle/ws` | `triangle/ws` | WebSocket application template |
+| `Metronic` | `triangle/web` | без переименования в рамках актуального train | Архив; оставить исторические метаданные |
+
+Предложение касается только поля `name` корневых проектов `type: project`; зависимости приложений от `triangle/engine`, `triangle/engine-http` и компонентов не меняются. Перед применением к публичным репозиториям нужно проверить существующие Packagist публикации и теги, downstream-команды `composer create-project`, release automation и документационные ссылки. Если checkout используются только как шаблоны в GitHub, package name должен соответствовать фактическому способу установки, а не создавать фиктивный публикуемый пакет.

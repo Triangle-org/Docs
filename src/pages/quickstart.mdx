@@ -1,203 +1,45 @@
 # Быстрый старт
 
-Это руководство поможет вам быстро создать ваше первое приложение на Triangle Framework.
+Это руководство поднимает минимальное приложение на HTTP-треке Web. Здесь используются текущие API и конфигурация репозитория `Web`; примеры для WS находятся в разделе [WebSocket-трек](/frameworks/ws).
 
-## Установка
-
-Создайте новый проект:
+## Создайте приложение
 
 ```bash
 composer create-project triangle/web my-first-app
 cd my-first-app
 ```
 
-## Запуск
+Проект требует PHP 8.2 или новее в пределах ветки 8.x и Composer. Composer сообщит об отсутствующих обязательных расширениях.
 
-Запустите приложение:
+## Запустите сервер
 
 ```bash
 php master start
 ```
 
-Приложение будет доступно по адресу `http://localhost:88`.
+Порт берётся из `SERVER_LISTEN` или `config/server.php`; в шаблоне Web это `http://127.0.0.1:8000`. Команда `php master status` показывает состояние запущенного master-процесса.
 
-## Создание первого контроллера
+## Добавьте маршрут
 
-Создайте файл `app/controller/Welcome.php`:
-
-```php
-<?php
-
-namespace App\Controller;
-
-use Triangle\Engine\Request;
-use Triangle\View\View;
-
-class Welcome
-{
-    public function index(Request $request)
-    {
-        return View::render('welcome', [
-            'message' => 'Hello, Triangle!',
-        ]);
-    }
-}
-```
-
-## Создание представления
-
-Создайте файл `app/view/welcome.phtml`:
-
-```php
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Welcome</title>
-</head>
-<body>
-    <h1><?= htmlspecialchars($message) ?></h1>
-</body>
-</html>
-```
-
-## Определение маршрута
-
-**Важно:** Файл `config/route.php` — это не конфигурационный файл с `return`, а выполняемый PHP-код!
-
-Обновите `config/route.php`:
+Откройте `config/route.php`. Этот файл исполняется при загрузке приложения и регистрирует маршруты через фасад Triangle Router:
 
 ```php
 <?php
-// config/route.php
-
-use Triangle\Router;
-
-// Использование автоматической маршрутизации
-// Контроллер Welcome доступен по адресу /welcome/index
-
-// Или явно задать маршрут
-Router::get('/', [\App\Controller\Welcome::class, 'index']);
-```
-
-## Альтернатива: Closure-маршрут
-
-Вы также можете использовать анонимные функции:
-
-```php
-<?php
-// config/route.php
 
 use Triangle\Request;
 use Triangle\Response;
 use Triangle\Router;
 
-Router::get('/', function (Request $request): Response {
-    return response('Hello, Triangle!');
+Router::get('/hello/{name}', function (Request $request, string $name): Response {
+    return response("Привет, $name!");
 });
 ```
 
-## Работа с базой данных
+Перезапустите или перезагрузите приложение и откройте `/hello/Мир`. `Triangle\Request` и `Triangle\Response` предоставляются Engine; конкретный HTTP dispatch выполняет `triangle/engine-http`.
 
-### Настройка подключения
+## Где продолжить
 
-Обновите `config/database.php` (это конфигурационный файл с `return`):
-
-```php
-<?php
-// config/database.php
-
-return [
-    'default' => 'mysql',
-    'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
-            'host' => '127.0.0.1',
-            'database' => 'myapp',
-            'username' => 'root',
-            'password' => '',
-        ],
-    ],
-];
-```
-
-### Создание модели
-
-Создайте `app/model/User.php`:
-
-```php
-<?php
-
-namespace App\Model;
-
-use Illuminate\Database\Eloquent\Model;
-
-class User extends Model
-{
-    protected $table = 'users';
-}
-```
-
-### Использование в контроллере
-
-```php
-<?php
-
-namespace App\Controller;
-
-use App\Model\User;
-use Triangle\Engine\Request;
-
-class UserController
-{
-    public function index()
-    {
-        $users = User::all();
-        return response()->json($users);
-    }
-}
-```
-
-## API-эндпоинт
-
-Создайте простой API в `config/route.php`:
-
-```php
-<?php
-// config/route.php
-
-use Triangle\Request;
-use Triangle\Response;
-use Triangle\Router;
-
-Router::get('/api/users', function (Request $request): Response {
-    $users = User::all();
-    return response()->json($users);
-});
-
-Router::post('/api/users', function (Request $request): Response {
-    $user = User::create([
-        'name' => $request->input('name'),
-        'email' => $request->input('email'),
-    ]);
-    
-    return response()->json($user, 201);
-});
-```
-
-## Разница между конфигурационными файлами
-
-### Конфигурационные файлы (с `return`):
-- `config/app.php`
-- `config/middleware.php`
-- `config/database.php`
-- `config/session.php`
-- И другие...
-
-### Исполняемый код (без `return`):
-- `config/route.php` — здесь вызываются методы `Router::get()`, `Router::post()` и т.д.
-
-## Следующие шаги
-
-- Изучите [документацию по архитектуре](/architecture)
-- Ознакомьтесь с [компонентами](/components)
-- Изучите [руководство по Web Framework](/frameworks/web)
+- [Архитектура и границы пакетов](/architecture)
+- [Компоненты Triangle](/components)
+- [Сборка Web](/frameworks/web)
+- [Снимок Composer-совместимости](/compatibility)

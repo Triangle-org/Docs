@@ -230,6 +230,7 @@ export const navigation = [
         links: [
             {title: 'Web', href: '/frameworks/web'},
             {title: 'WS', href: '/frameworks/ws'},
+            {title: 'Совместимость', href: '/compatibility'},
         ],
     },
 ]

@@ -1,27 +1,32 @@
-export const title = "Установка";
-// export const description = "";
+# Установка
 
-## Системные требования
-- PHP >= `8.2`
-- Расширения PHP: `ext-curl`, `ext-json`, `ext-intl`, `ext-posix`, `ext-mbstring`, `ext-zend-opcache`
-- Composer >= `2.0`
+Руководство описывает установку опубликованного HTTP-шаблона `triangle/web`. Для сборок из исходного кода используйте manifests каждого репозитория и [матрицу совместимости](/compatibility).
 
-## Установка через Composer
+## Требования
 
-```bash {{ title: '1. Создайте проект' }}
-composer create-project triangle/web
+- PHP `^8.2` и Composer 2.
+- Обязательные PHP extensions проверяются Composer из manifests зависимостей. В частности, `triangle/engine` требует `ext-intl` и `ext-json`, HTTP Engine требует `ext-curl`.
+- На Unix для управления несколькими процессами используются системные возможности PHP/ОС. На Windows Localzet Server работает в однопроцессном режиме.
+
+Не устанавливайте `ext-posix`, `ext-mbstring` или OPcache как универсальные требования Web: они нужны отдельным интеграциям или рекомендованы для production, но не объявлены обязательными всеми базовыми пакетами.
+
+## Установка
+
+```bash
+composer create-project triangle/web my-app
+cd my-app
 ```
 
-<Note>
-    Помните, что при выполнении `composer create-project ...` создаётся папка с конечным названием проекта.
-    В данном случае это папка `web`
-</Note>
+Проверьте итог установки Composer: сообщение об отсутствующем обязательном PHP extension нужно устранить в текущем PHP CLI окружении.
 
-```bash {{ title: '2. Перейдите в директорию с проектом и выполните команду запуска' }}
-cd ./web
+## Запуск и остановка
+
+```bash
 php master start
+php master status
+php master stop
 ```
 
-По умолчанию проект запускается на порту `88` и доступен по адресу `http://localhost:88`. Также проект можно
-запустить с флагом ` -d`, такая команда выполнит запуск в фоновом режиме. Все команды доступны в разделе [Консольные команды](/console).
+Шаблон слушает `http://127.0.0.1:8000`; адрес можно изменить через `SERVER_LISTEN` или в `config/server.php`. Фоновый режим и команды управления сверяйте с `php master` и конфигурацией установленной версии.
 
+См. также [быстрый старт](/quickstart), [команды Console](/components/console) и [совместимость пакетов](/compatibility).

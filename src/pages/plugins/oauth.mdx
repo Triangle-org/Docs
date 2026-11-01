@@ -1,189 +1,43 @@
-# OAuth Plugin
+# OAuth plugin
 
-Плагин `triangle/oauth` предоставляет мощную систему OAuth-аутентификации с поддержкой множества популярных провайдеров.
+`triangle/oauth` содержит OAuth-адаптеры. Пакет возвращает адаптер провайдера или HTTP-ответ перенаправления из `authenticate()`. Это библиотека для интеграции в приложение; конкретные маршруты, callback и хранение сессии настраивает приложение.
 
-## Установка
+## Совместимость и установка
+
+Пакет требует PHP `^8.2`, `localzet/http ^2` и `triangle/engine ^8.1`; также необходимы `ext-curl`, `ext-json` и `ext-mbstring`. Совместимость фиксируется в [матрице](/compatibility).
 
 ```bash
 composer require triangle/oauth
 ```
 
-## Поддерживаемые провайдеры
+## Конфигурация и создание адаптера
 
-Плагин поддерживает 50+ провайдеров, включая:
-
-- **Социальные сети:** Google, Facebook, Twitter, LinkedIn, VKontakte, Yandex, Mail.ru
-- **Разработка:** GitHub, GitLab, Bitbucket
-- **Мессенджеры:** Discord, Telegram, Slack
-- **Игровые:** Steam, Twitch
-- **Прочее:** Apple, Amazon, PayPal, Spotify и многие другие
-
-Полный список провайдеров см. в [репозитории](https://github.com/Triangle-org/OAuth).
-
-## Конфигурация
-
-### Настройка провайдера
-
-В `config/plugins/oauth.php`:
+`Triangle\OAuth\OAuth` принимает конфигурационный массив или путь к PHP-файлу, возвращающему массив. Для провайдера задайте `enabled`, ключи и callback-параметры. Точные поля зависят от адаптера:
 
 ```php
-return [
+use Triangle\OAuth\OAuth;
+
+$oauth = new OAuth([
+    'callback' => 'https://example.test/auth/callback',
     'providers' => [
-        'google' => [
-            'client_id' => env('GOOGLE_CLIENT_ID'),
-            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-            'redirect_uri' => 'http://localhost:88/auth/google/callback',
-        ],
-        
-        'facebook' => [
-            'client_id' => env('FACEBOOK_APP_ID'),
-            'client_secret' => env('FACEBOOK_APP_SECRET'),
-            'redirect_uri' => 'http://localhost:88/auth/facebook/callback',
+        'GitHub' => [
+            'enabled' => true,
+            'keys' => [
+                'id' => env('GITHUB_CLIENT_ID'),
+                'secret' => env('GITHUB_CLIENT_SECRET'),
+            ],
         ],
     ],
-    
-    'storage' => \Triangle\OAuth\Storage\Session::class,
-];
-```
-
-### Получение учетных данных
-
-1. **Google:**
-   - Перейдите на [Google Cloud Console](https://console.cloud.google.com/)
-   - Создайте проект и OAuth 2.0 credentials
-
-2. **Facebook:**
-   - Перейдите на [Facebook Developers](https://developers.facebook.com/)
-   - Создайте приложение
-
-## Использование
-
-### Инициализация провайдера
-
-```php
-use Triangle\OAuth\OAuth;
-
-$oauth = new OAuth();
-
-// Google
-$google = $oauth->provider('google', [
-    'client_id' => 'your-client-id',
-    'client_secret' => 'your-client-secret',
-    'redirect_uri' => 'http://localhost:88/auth/google/callback',
 ]);
+
+$result = $oauth->authenticate('GitHub');
 ```
 
-### Авторизация
-
-```php
-<?php
-
-namespace App\Controller;
-
-use Triangle\OAuth\OAuth;
-use Triangle\Engine\Request;
-
-class AuthController
-{
-    public function redirectToGoogle(OAuth $oauth)
-    {
-        $provider = $oauth->provider('google');
-        $authorizationUrl = $provider->getAuthorizationUrl();
-        
-        // Сохранение state для защиты от CSRF
-        session()->set('oauth_state', $provider->getState());
-        
-        return redirect($authorizationUrl);
-    }
-    
-    public function handleGoogleCallback(Request $request, OAuth $oauth)
-    {
-        $provider = $oauth->provider('google');
-        
-        // Проверка state
-        $state = $request->input('state');
-        if ($state !== session()->get('oauth_state')) {
-            throw new \Exception('Invalid state');
-        }
-        
-        // Обмен кода на токен
-        $accessToken = $provider->getAccessToken('authorization_code', [
-            'code' => $request->input('code'),
-        ]);
-        
-        // Получение данных пользователя
-        $userData = $provider->getUserProfile($accessToken);
-        
-        // Работа с данными пользователя
-        // ...
-        
-        return response()->json($userData);
-    }
-}
-```
-
-### Получение профиля пользователя
-
-```php
-$profile = $provider->getUserProfile($accessToken);
-
-// Доступные поля:
-$profile->identifier;  // Уникальный ID
-$profile->email;       // Email
-$profile->firstName;   // Имя
-$profile->lastName;    // Фамилия
-$profile->photoURL;    // URL фото
-```
-
-### Работа с токенами
-
-```php
-// Сохранение токена
-session()->set('oauth_token', $accessToken);
-
-// Использование сохраненного токена
-$token = session()->get('oauth_token');
-$profile = $provider->getUserProfile($token);
-```
-
-## Маршруты
-
-Определите маршруты для OAuth:
-
-```php
-// config/route.php
-use Triangle\Router\Route;
-
-Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
-Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
-```
-
-## Примеры для разных провайдеров
-
-### GitHub
-
-```php
-$github = $oauth->provider('github', [
-    'client_id' => env('GITHUB_CLIENT_ID'),
-    'client_secret' => env('GITHUB_CLIENT_SECRET'),
-    'redirect_uri' => 'http://localhost:88/auth/github/callback',
-]);
-```
-
-### VKontakte
-
-```php
-$vkontakte = $oauth->provider('vkontakte', [
-    'client_id' => env('VK_APP_ID'),
-    'client_secret' => env('VK_SECRET_KEY'),
-    'redirect_uri' => 'http://localhost:88/auth/vkontakte/callback',
-]);
-```
+`authenticate()` может вернуть `Triangle\Engine\Response` с redirect на провайдера либо экземпляр адаптера. После callback приложение должно снова создать адаптер с тем же хранилищем, обработать callback через `authenticate()` и только затем читать токен/профиль средствами конкретного адаптера. Интерфейсы не одинаковы для всех провайдеров; сверяйте их классы в исходном репозитории.
 
 ## Безопасность
 
-- Всегда проверяйте `state` параметр для защиты от CSRF
-- Используйте HTTPS в production
-- Храните секреты в переменных окружения
-- Не сохраняйте чувствительные данные в сессиях без шифрования
-
+- Храните client secrets вне исходного кода и не журналируйте access/refresh tokens.
+- Используйте HTTPS для callback в production.
+- Реализуйте CSRF `state` и постоянное хранилище OAuth-состояния на стороне приложения. Пакет принимает `StorageInterface`, но автоматически не подключает Web session.
+- Проверьте список и фактическую реализацию провайдера до использования; наличие класса не означает актуальность OAuth endpoints стороннего сервиса.

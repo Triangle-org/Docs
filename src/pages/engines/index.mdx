@@ -24,7 +24,7 @@ composer require triangle/engine-http
 
 HTTP Engine используется как база для создания HTTP-приложений. Подробнее смотрите в документации [Web Framework](/frameworks/web).
 
-**Документация:** [HTTP Engine](/engines/http)
+Подробности HTTP-приложения описаны в разделе [Web](/frameworks/web).
 
 ## WebSocket Engine (`triangle/engine-ws`)
 
@@ -47,13 +47,15 @@ composer require triangle/engine-ws
 
 WebSocket Engine используется как база для создания real-time приложений. Подробнее смотрите в документации [WS Framework](/frameworks/ws).
 
-**Документация:** [WebSocket Engine](/engines/websocket)
+Подробности экспериментального WebSocket-приложения описаны в разделе [WS](/frameworks/ws).
 
 ## Важно
 
-⚠️ **Движки `engine-http` и `engine-ws` являются взаимоисключающими** — они не могут использоваться одновременно в одном проекте из-за конфликтов в конфигурации и обработке запросов.
+HTTP и WS — разные application tracks. Composer manifests движков явно запрещают совместную установку `triangle/engine-http` и `triangle/engine-ws` в одном dependency graph. Отдельные приложения могут быть развёрнуты на одном Localzet Server deployment только при подходящей process/network конфигурации.
 
 Используйте:
 - `triangle/engine-http` для HTTP-приложений
 - `triangle/engine-ws` для WebSocket-приложений
+
+Composer constraints и состояния lock-файлов приведены в [матрице совместимости](/compatibility).
 

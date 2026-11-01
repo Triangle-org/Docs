@@ -1,29 +1,22 @@
-import {Guides} from '@/components/Guides'
-import {Resources} from '@/components/Resources'
 import {HeroPattern} from '@/components/HeroPattern'
 
 export const description =
-    'Learn everything there is to know about the Protocol API and integrate Protocol into your product.'
-
-{/* export const sections = [ */}
-{/*     {title: 'Guides', id: 'guides'}, */}
-{/*     {title: 'Resources', id: 'resources'}, */}
-{/* ] */}
+    'Документация модульных PHP-компонентов Triangle на базе Localzet Server.'
 
 <HeroPattern/>
 
-# Triangle Web
+# Triangle Framework
 
-Высокопроизводительный HTTP-фреймворк, разработанный на основе [Localzet Server](https://github.com/localzet/Server). Призван заменить традиционную архитектуру PHP-FPM. Triangle можно использовать для разработки веб-сайтов, HTTP-интерфейсов или микросервисов. {{ className: 'lead' }}
+Модульный набор PHP-библиотек на базе [Localzet Server](https://github.com/localzet/Server). Включает HTTP-трек Web и отдельный WebSocket-трек WS для приложений реального времени. Выбирайте нужные компоненты и проверяйте их совместимость по [матрице пакетов](/compatibility). {{ className: 'lead' }}
 
 <div className="mb-16 mt-6 flex gap-3">
-    <Button href="/install" arrow="right" children="Начало работы"/>
-{/*     <Button href="/sdks" variant="outline" children="Плагины и дополнения"/> */}
+    <Button href="/quickstart" arrow="right" children="Быстрый старт"/>
+    <Button href="/architecture" variant="outline" children="Архитектура"/>
 </div>
 
 ## Концепт проекта {{ anchor: false }}
 
-Фреймворк представляет собой рабочее окружение [Web](https://github.com/Triangle-org/Web) и библиотеку-ядро [Engine](https://github.com/Triangle-org/Engine), импортируемую через [Composer](https://packagist.org/packages/triangle/engine). Основные зависимости требуют `PHP v8.2`. {{ className: 'lead' }}
+В основе лежит [Localzet Server](https://github.com/localzet/Server), над ним расположены Engine, компоненты, специализированные движки и приложения Web/WS. В checkout 2026-11-01 приложения декларируют PHP `^8.2`, а многие библиотеки — `^8.1`; отдельные legacy-пакеты имеют другие требования. Это описание manifests, не гарантия поддерживаемой матрицы. {{ className: 'lead' }}
 
 <Button
     href="/install"
@@ -31,7 +24,3 @@ export const description =
     arrow="right"
     children="Установка"
 />
-
-{/* <Guides/> */}
-
-{/* <Resources/> */}

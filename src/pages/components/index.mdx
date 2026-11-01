@@ -1,125 +1,20 @@
-# Компоненты Triangle Framework
+# Компоненты
 
-Компоненты — это модульные библиотеки, расширяющие функциональность ядра Triangle Engine. Каждый компонент может использоваться независимо и настраивается через систему конфигурации.
+Компоненты разделены на Composer-пакеты, но текущие пакеты Triangle обычно требуют `triangle/engine` и не все имеют standalone API вне его. Смотрите конкретный `composer.json` и [матрицу совместимости](/compatibility) перед выбором.
 
-## Доступные компоненты
+| Пакет | Назначение | Основная интеграция |
+| --- | --- | --- |
+| [`triangle/console`](/components/console) | команды приложения | Localzet Console и Engine; PHP `^8.2` |
+| [`triangle/router`](/components/router) | сбор и диспетчеризация маршрутов | Engine; HTTP и WS движки |
+| [`triangle/middleware`](/components/middleware) | middleware для приложения и маршрута | Engine и Router |
+| [`triangle/database`](/components/database) | доступ к БД через Illuminate Database | Illuminate 11; PHP `^8.2` |
+| [`triangle/view`](/components/view) | рендеринг представлений | Engine; Twig/Blade/Think templates — optional adapters |
+| [`triangle/session`](/components/session) | HTTP-сессии | Engine; MongoDB handler предлагается отдельно |
+| [`triangle/events`](/components/events) | события Triangle и listeners | Engine |
+| [`triangle/cron`](/components/cron) | расписание фоновых задач | Localzet Cron и Triangle Events |
 
-### Console (`triangle/console`)
+## Подключение
 
-Система консольных команд и CLI-инструментов.
+Варианты приложения Web/WS уже включают нужные им пакеты. Для ручной сборки используйте точные Composer constraints из конкретного компонента и выбранного движка; пакеты `triangle/engine-http` и `triangle/engine-ws` объявляют mutual conflict и относятся к разным application tracks.
 
-**Основные возможности:**
-- Создание консольных команд
-- Генерация кода (контроллеры, модели, middleware)
-- Управление плагинами
-- Сборка бинарных файлов и PHAR-архивов
-
-**Документация:** [Console Component](/components/console)
-
-### Router (`triangle/router`)
-
-Мощная система маршрутизации с поддержкой различных алгоритмов диспетчеризации.
-
-**Основные возможности:**
-- Быстрая диспетчеризация маршрутов
-- Поддержка параметров маршрутов
-- Группировка маршрутов
-- Различные алгоритмы диспетчеризации (Mark-based, Group-based и др.)
-
-**Документация:** [Router Component](/components/router)
-
-### Middleware (`triangle/middleware`)
-
-Система промежуточного ПО для обработки запросов.
-
-**Основные возможности:**
-- Глобальные и маршрутные middleware
-- Последовательная обработка запросов
-- Аннотации для привязки middleware к маршрутам
-
-**Документация:** [Middleware Component](/components/middleware)
-
-### Database (`triangle/database`)
-
-Работа с базами данных на основе Illuminate Database.
-
-**Основные возможности:**
-- Query Builder
-- Eloquent ORM
-- Миграции
-- Поддержка множественных подключений
-- Поддержка PostgreSQL, MySQL, SQLite и др.
-
-**Документация:** [Database Component](/components/database)
-
-### View (`triangle/view`)
-
-Система шаблонизации с поддержкой различных движков.
-
-**Основные возможности:**
-- Поддержка Twig, Blade, ThinkPHP шаблонов
-- Система наследования шаблонов
-- Кэширование скомпилированных шаблонов
-
-**Документация:** [View Component](/components/view)
-
-### Session (`triangle/session`)
-
-Управление сессиями пользователей.
-
-**Основные возможности:**
-- Различные драйверы сессий (файлы, Redis, MongoDB)
-- Безопасное хранение данных сессии
-- Настраиваемое время жизни сессии
-
-**Документация:** [Session Component](/components/session)
-
-### Events (`triangle/events`)
-
-Система событий для реализации паттерна Observer.
-
-**Основные возможности:**
-- Регистрация слушателей событий
-- Синхронная и асинхронная обработка событий
-- Группировка слушателей
-
-**Документация:** [Events Component](/components/events)
-
-### Cron (`triangle/cron`)
-
-Планировщик задач (cron-задач).
-
-**Основные возможности:**
-- Планирование периодических задач
-- Интеграция с системой событий
-- Поддержка cron-выражений
-
-**Документация:** [Cron Component](/components/cron)
-
-## Использование компонентов
-
-Все компоненты автоматически инициализируются через систему Bootstrap Engine. Для настройки компонента используйте соответствующие файлы конфигурации в папке `config/`.
-
-Пример конфигурации компонента:
-
-```php
-// config/router.php
-return [
-    'route' => [
-        // настройки маршрутизации
-    ],
-];
-```
-
-## Установка компонентов
-
-Компоненты устанавливаются через Composer:
-
-```bash
-composer require triangle/router
-composer require triangle/database
-# и т.д.
-```
-
-После установки компоненты автоматически подключаются к системе, если они указаны в конфигурации Bootstrap.
-
+Наличие отдельного репозитория означает независимое версионирование, но ещё не гарантирует заменяемость реализации или работу вне Triangle. Для самостоятельного использования проверьте импортируемые namespace и требования к Engine в manifest.

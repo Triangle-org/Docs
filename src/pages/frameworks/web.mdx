@@ -1,311 +1,48 @@
-# Triangle Web Framework
+# Web — HTTP-сборка
 
-`triangle/web` — это полнофункциональный HTTP-фреймворк на основе Triangle Engine, предоставляющий MVC-архитектуру для разработки веб-приложений.
+`triangle/web` — приложение-шаблон HTTP-трека Triangle. В актуальном checkout оно собирает `triangle/engine`, `triangle/engine-http`, Console, Router, Middleware, Database, Session, View и Events поверх Localzet Server. Для точных Composer-ограничений см. [матрицу совместимости](/compatibility).
 
-## Установка
+## Маршрут запроса
 
-```bash
-composer create-project triangle/web my-app
-cd my-app
-```
+**Клиент → Localzet Server → Engine HTTP → Middleware → Router → контроллер/callback → Response.**
+Server принимает соединение и передаёт HTTP lifecycle движку; Router выбирает обработчик, а Middleware оборачивает его выполнение.
 
-## Структура проекта
+## Структура шаблона
 
-```
-my-app/
-├── app/
-│   ├── controller/     # Контроллеры
-│   ├── middleware/     # Middleware
-│   ├── model/          # Модели
-│   └── view/           # Представления
-├── config/             # Конфигурация
-│   ├── app.php         # Настройки приложения (return array)
-│   ├── route.php       # Маршруты (выполняемый PHP код)
-│   ├── middleware.php  # Middleware (return array)
-│   ├── database.php    # База данных (return array)
-│   └── ...
-├── public/             # Публичная директория
-├── runtime/            # Временные файлы
-└── master              # Скрипт запуска
-```
+- `app/controller/` — обработчики приложения; шаблон использует namespace `app\controller`.
+- `app/middleware/` — прикладные middleware.
+- `app/model/` — модели приложения, если оно использует Eloquent.
+- `app/view/` — представления.
+- `config/route.php` — исполняемый PHP, регистрирующий маршруты.
+- `config/server.php` — listener, handler и настройки master/worker.
+- `config/database.php`, `config/session.php`, `config/view.php` — настройки соответствующих модулей.
+- `master` — CLI entry point приложения.
 
 ## Запуск
 
 ```bash
-# Разработка
 php master start
-
-# Production (в фоне)
-php master start -d
-
-# Остановка
-php master stop
-
-# Перезапуск
-php master restart
-
-# Статус
 php master status
 ```
 
-По умолчанию приложение запускается на порту `88` и доступно по адресу `http://localhost:88`.
+Шаблон слушает `http://127.0.0.1:8000`; адрес берётся из `SERVER_LISTEN` или `config/server.php`. Доступность команд и флагов зависит от версии Console в установленном lock-файле.
 
-## Конфигурация
+## Маршрут
 
-### Настройки приложения (config/app.php)
-
-Это **конфигурационный файл** с массивом настроек:
+Шаблонные маршруты объявляются через Triangle Router:
 
 ```php
-<?php
-// config/app.php
-
-return [
-    'debug' => true,
-    'name' => env('APP_NAME', 'Triangle App'),
-    
-    'plugin_alias' => env('APP_PLUGIN_ALIAS', 'plugin'),
-    'plugin_uri' => env('APP_PLUGIN_URI', 'app'),
-    
-    'controller_suffix' => env('CONTROLLER_SUFFIX', ''),
-    'controller_reuse' => env('CONTROLLER_REUSE', true),
-    
-    'http_always_200' => false,
-    'http_headers' => [
-        'Content-Language' => 'ru',
-        'Access-Control-Allow-Origin' => '*',
-    ],
-];
-```
-
-### Маршруты (config/route.php)
-
-**Важно:** Это **НЕ конфигурационный файл**, а выполняемый PHP-код:
-
-```php
-<?php
-// config/route.php
-
 use Triangle\Request;
 use Triangle\Response;
 use Triangle\Router;
 
-// Простые маршруты
-Router::get('/', [\App\Controller\IndexController::class, 'index']);
-Router::get('/about', function (Request $request): Response {
-    return response('About page');
-});
-
-// Маршруты с параметрами
-Router::get('/user/{id}', [\App\Controller\UserController::class, 'show']);
-
-// API маршруты
-Router::group('/api', function () {
-    Router::get('/users', [\App\Controller\Api\UserController::class, 'index']);
-    Router::post('/users', [\App\Controller\Api\UserController::class, 'store']);
-})->middleware(\App\Middleware\ApiAuthMiddleware::class);
-```
-
-### Middleware (config/middleware.php)
-
-Это **конфигурационный файл** с массивом middleware:
-
-```php
-<?php
-// config/middleware.php
-
-return [
-    // Глобальное middleware
-    '' => [
-        \App\Middleware\CorsMiddleware::class,
-        \App\Middleware\LoggingMiddleware::class,
-    ],
-    
-    // Middleware для приложения
-    'api' => [
-        \App\Middleware\ApiAuthMiddleware::class,
-    ],
-];
-```
-
-### База данных (config/database.php)
-
-Это **конфигурационный файл**:
-
-```php
-<?php
-// config/database.php
-
-return [
-    'default' => 'mysql',
-    'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
-            'host' => '127.0.0.1',
-            'database' => 'myapp',
-            'username' => 'root',
-            'password' => '',
-        ],
-    ],
-];
-```
-
-## Создание контроллера
-
-```php
-<?php
-// app/controller/Index.php
-
-namespace App\Controller;
-
-use Triangle\Engine\Request;
-use Triangle\View\View;
-
-class Index
-{
-    public function index(Request $request)
-    {
-        return View::render('index', [
-            'title' => 'Home Page',
-        ]);
-    }
-}
-```
-
-Контроллер автоматически будет доступен по маршруту `/index/index` (автоматическая маршрутизация).
-
-## Работа с базой данных
-
-```php
-<?php
-
-namespace App\Controller;
-
-use Triangle\Database\DB;
-
-class UserController
-{
-    public function index()
-    {
-        $users = DB::table('users')->get();
-        return response()->json($users);
-    }
-}
-```
-
-## Примеры использования
-
-### Простое API
-
-```php
-<?php
-// config/route.php
-
-use Triangle\Request;
-use Triangle\Response;
-use Triangle\Router;
-
-Router::get('/api/users', function (Request $request): Response {
-    $users = DB::table('users')->get();
-    return response()->json($users);
-});
-
-Router::post('/api/users', function (Request $request): Response {
-    $user = DB::table('users')->insert([
-        'name' => $request->input('name'),
-        'email' => $request->input('email'),
-    ]);
-    
-    return response()->json($user, 201);
+Router::get('/hello/{name}', function (Request $request, string $name): Response {
+    return response("Привет, $name!");
 });
 ```
 
-### С контроллерами
+Для запуска нового проекта см. [быстрый старт](/quickstart) и используйте примеры из этой документации: namespace и lifecycle зависят от версии Triangle.
 
-```php
-<?php
-// config/route.php
+## Граница совместимости
 
-use Triangle\Router;
-
-Router::get('/', [\App\Controller\IndexController::class, 'index']);
-Router::get('/users', [\App\Controller\UserController::class, 'index']);
-Router::get('/users/{id}', [\App\Controller\UserController::class, 'show']);
-```
-
-### С middleware
-
-```php
-<?php
-// config/route.php
-
-use Triangle\Router;
-
-Router::group('/admin', function () {
-    Router::get('/dashboard', [\App\Controller\Admin\DashboardController::class, 'index']);
-})->middleware(\App\Middleware\AuthMiddleware::class);
-```
-
-## API-ответы
-
-```php
-use Triangle\Engine\Response;
-
-// JSON-ответ
-return response()->json(['users' => $users]);
-
-// Текст
-return response('Hello, World!');
-
-// HTML
-return response('<h1>Hello</h1>')->header('Content-Type', 'text/html');
-
-// С кодом статуса
-return response('Not Found', 404);
-
-// Редирект
-return redirect('/login');
-```
-
-## Статические файлы
-
-Настройка в `config/static.php`:
-
-```php
-<?php
-
-return [
-    'enable' => true,
-    'path' => public_path(),
-];
-```
-
-Статические файлы автоматически отдаются из папки `public/`.
-
-## Развертывание
-
-### Production
-
-1. Установите зависимости:
-```bash
-composer install --no-dev --optimize-autoloader
-```
-
-2. Настройте конфигурацию:
-```php
-// config/app.php
-'debug' => false,
-```
-
-3. Запустите в фоновом режиме:
-```bash
-php master start -d
-```
-
-### Docker
-
-Используйте `docker-compose.yml` из проекта:
-
-```bash
-docker-compose up -d
-```
+Web, Web-Managed и Full имеют одинаковое имя Composer-пакета `triangle/web`, но разные constraints и состав исходного шаблона. Не объединяйте их без отдельной проверки; используйте lock-файл выбранного шаблона.

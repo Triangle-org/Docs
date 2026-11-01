@@ -1,13 +1,15 @@
 # Triangle Docs
 
-Triangle Docs is documentation for the Triangle Web Framework built using [Tailwind CSS](https://tailwindcss.com) and [Next.js](https://nextjs.org).
+Documentation for the modular Triangle PHP ecosystem built on [Localzet Server](https://github.com/localzet/Server): reusable libraries, the HTTP `Web` track and the experimental realtime `WS` track. [Compatibility](/compatibility) records this checkout's Composer constraints and lock snapshots; it does not claim unverified runtime compatibility for legacy plugins.
+
+The documentation site is built with [Tailwind CSS](https://tailwindcss.com) and [Next.js](https://nextjs.org).
 
 ## Getting started
 
-To get started with this documentation, first install the npm dependencies:
+Use the committed npm lockfile to install the documentation site dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Next, run the development server:

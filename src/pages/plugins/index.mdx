@@ -1,183 +1,25 @@
-# Плагины Triangle Framework
+# Плагины
 
-Плагины — это дополнительные модули расширения, которые можно легко подключать к приложению. Они расширяют функциональность фреймворка без изменения ядра.
+Каталог перечисляет plugin repositories из этого checkout. Наличие Composer-пакета само по себе не означает, что он полностью интегрирован с текущими Triangle Engine APIs.
 
-## Доступные плагины
+## OAuth — требует проверки интеграции
 
-### OAuth (`triangle/oauth`)
+`triangle/oauth` использует Localzet HTTP client и Triangle Engine. Смотрите страницу [OAuth](/plugins/oauth) и сверяйте работу конкретного провайдера: публичные OAuth endpoints и требования могут изменяться независимо от пакета.
 
-Мощный плагин для OAuth-аутентификации с поддержкой множества провайдеров.
+## Media — runtime не проверен
 
-**Поддерживаемые провайдеры:**
-- Google, Facebook, Twitter, Apple
-- GitHub, GitLab, Bitbucket
-- Discord, Slack, Telegram
-- VKontakte, Yandex, Mail.ru
-- И многие другие (50+ провайдеров)
+`triangle/media` требует PHP Imagick extension. В текущем окружении расширение недоступно, поэтому установка и обработка медиа не подтверждены. До использования проверьте реальные операции в исходном коде и требования своей платформы.
 
-**Установка:**
-```bash
-composer require triangle/oauth
-```
+## Pusher — незавершённый каркас
 
-**Документация:** [OAuth Plugin](/plugins/oauth)
+В репозитории есть заготовка плагина, но его process handler пуст, конфигурационные ключи не согласованы, а зависимости API не объявлены. Не используйте его как готовый push-сервис.
 
-### Media (`triangle/media`)
+## MultiConnect — Localzet Server connection registry
 
-Плагин для обработки медиа-файлов (изображения, видео и др.).
+`triangle/multiconnect` зависит от Localzet Server и предоставляет `GatewayServer` с реестром соединений, UID и групп внутри worker-процесса. Обработчик можно зарегистрировать как endpoint Localzet Server или явно добавить в `config/process.php` Triangle-приложения. Пакет можно использовать вне Triangle.
 
-**Основные возможности:**
-- Обработка изображений через ImageMagick
-- Ресайз и обрезка изображений
-- Конвертация форматов
-- Оптимизация размера файлов
+Реестр видит только соединения текущего worker-процесса. Межпроцессная и межузловая рассылка, эквивалентная GatewayWorker, требует broker-интеграции и в этот пакет не входит. См. README пакета и [матрицу совместимости](/compatibility).
 
-**Установка:**
-```bash
-composer require triangle/media
-```
+## Установка и управление
 
-**Требования:** `ext-imagick`
-
-**Документация:** [Media Plugin](/plugins/media)
-
-### Pusher (`triangle/pusher`)
-
-Система push-уведомлений для real-time приложений.
-
-**Возможности:**
-- Отправка push-уведомлений
-- Управление подписками
-- Интеграция с различными сервисами
-
-**Установка:**
-```bash
-composer require triangle/pusher
-```
-
-**Документация:** [Pusher Plugin](/plugins/pusher)
-
-### MultiConnect (`triangle/multiconnect`)
-
-Шлюз для множественных подключений, основанный на Gateway Worker.
-
-**Возможности:**
-- Распределение соединений между процессами
-- Горизонтальное масштабирование
-- Управление множественными подключениями
-
-**Установка:**
-```bash
-composer require triangle/multiconnect
-```
-
-**Требования:** `workerman/gateway-worker >= 3.0`
-
-**Документация:** [MultiConnect Plugin](/plugins/multiconnect)
-
-## Установка плагинов
-
-Плагины устанавливаются через Composer и автоматически регистрируются системой:
-
-```bash
-composer require triangle/oauth
-```
-
-После установки плагин становится доступен через систему плагинов Engine.
-
-## Управление плагинами
-
-Используйте консольные команды для управления плагинами:
-
-```bash
-# Просмотр установленных плагинов
-php master plugin:list
-
-# Включение плагина
-php master plugin:enable triangle/oauth
-
-# Отключение плагина
-php master plugin:disable triangle/oauth
-
-# Обновление плагина
-php master plugin:update triangle/oauth
-
-# Удаление плагина
-php master plugin:uninstall triangle/oauth
-```
-
-## Создание собственного плагина
-
-### Структура плагина
-
-```
-plugin-name/
-├── composer.json
-├── src/
-│   ├── Plugin.php
-│   └── ...
-├── config/
-│   └── plugin.php
-└── Install.php
-```
-
-### composer.json
-
-```json
-{
-    "name": "vendor/plugin-name",
-    "type": "triangle-plugin",
-    "autoload": {
-        "psr-4": {
-            "Vendor\\PluginName\\": "src/"
-        }
-    },
-    "extra": {
-        "triangle-plugin": {
-            "name": "plugin-name",
-            "namespace": "Vendor\\PluginName"
-        }
-    }
-}
-```
-
-### Plugin.php
-
-```php
-<?php
-
-namespace Vendor\PluginName;
-
-use Triangle\Engine\Plugin;
-
-class Plugin extends Plugin
-{
-    public static function install(): void
-    {
-        // Логика установки
-    }
-
-    public static function uninstall(): void
-    {
-        // Логика удаления
-    }
-
-    public static function update(): void
-    {
-        // Логика обновления
-    }
-}
-```
-
-## Конфигурация плагинов
-
-Каждый плагин может иметь свой файл конфигурации в папке `config/plugins/`:
-
-```php
-// config/plugins/plugin-name.php
-return [
-    'enabled' => true,
-    // другие настройки
-];
-```
-
+Для поддерживаемого пакета используйте Composer и затем следуйте его собственному README. Команды управления `master plugin:*` доступны только если установленная сборка Console содержит соответствующую команду; проверьте `php master list` перед использованием.
