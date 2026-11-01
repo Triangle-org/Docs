@@ -223,6 +223,9 @@ export const navigation = [
         links: [
             {title: 'Обзор', href: '/plugins'},
             {title: 'OAuth', href: '/plugins/oauth'},
+            {title: 'Media', href: '/plugins/media'},
+            {title: 'MultiConnect', href: '/plugins/multiconnect'},
+            {title: 'Pusher', href: '/plugins/pusher'},
         ],
     },
     {
@@ -231,6 +234,13 @@ export const navigation = [
             {title: 'Web', href: '/frameworks/web'},
             {title: 'WS', href: '/frameworks/ws'},
             {title: 'Совместимость', href: '/compatibility'},
+        ],
+    },
+    {
+        title: 'Проекты',
+        links: [
+            {title: 'Full', href: '/frameworks/full'},
+            {title: 'Maestro', href: '/frameworks/maestro'},
         ],
     },
 ]

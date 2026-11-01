@@ -4,19 +4,19 @@
 
 ## OAuth
 
-`triangle/oauth` использует Localzet HTTP client и Triangle Engine. Смотрите страницу [OAuth](/plugins/oauth) и сверяйте работу конкретного провайдера: публичные OAuth endpoints и требования могут изменяться независимо от пакета.
+`triangle/oauth` использует Localzet HTTP client и Triangle Engine. Смотрите страницу [OAuth](/plugins/oauth) и проверяйте поддержку конкретного провайдера: его endpoints и требования могут изменяться независимо от пакета.
 
 ## Media — обработка изображений
 
-`triangle/media` требует PHP Imagick extension. Установите Imagick для используемой версии PHP и проверьте поддерживаемые операции обработки в документации пакета.
+`triangle/media` требует PHP Imagick extension. Установите Imagick для используемой версии PHP; обзор API и рекомендации по upload-маршрутам — на странице [Media](/plugins/media).
 
 ## Pusher — незавершённый каркас
 
-Плагин остаётся прототипом: конфигурация отключена по умолчанию, а полноценная обработка push-событий не реализована. Не используйте его как готовый push-сервис.
+Плагин остаётся прототипом: конфигурация отключена по умолчанию, а полноценная обработка push-событий не реализована. Не используйте его как готовый push-сервис; подробности — на странице [Pusher](/plugins/pusher).
 
 ## MultiConnect — Localzet Server connection registry
 
-`triangle/multiconnect` зависит от Localzet Server и предоставляет `GatewayServer` с реестром соединений, UID и групп внутри worker-процесса. Обработчик можно зарегистрировать как endpoint Localzet Server или явно добавить в `config/process.php` Triangle-приложения. Пакет можно использовать вне Triangle.
+`triangle/multiconnect` зависит от Localzet Server и предоставляет `GatewayServer` с реестром соединений, UID и групп внутри worker-процесса. Обработчик можно зарегистрировать как endpoint Localzet Server или явно добавить в `config/process.php` Triangle-приложения. Пакет можно использовать вне Triangle; пример подключения приведён в [руководстве MultiConnect](/plugins/multiconnect).
 
 Реестр видит только соединения текущего worker-процесса. Межпроцессная и межузловая рассылка, эквивалентная GatewayWorker, требует broker-интеграции и в этот пакет не входит. См. README пакета и [матрицу совместимости](/compatibility).
 
