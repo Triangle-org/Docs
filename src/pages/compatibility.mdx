@@ -22,13 +22,13 @@
 | Приложение | Composer package | PHP | Состав |
 | --- | --- | --- | --- |
 | Web | `triangle/web` | `^8.2` | Engine 8.1, HTTP Engine 2, Console 1.3, Database 1, Session 1, View 2, Events 1; требуется `ext-curl` |
-| Web-Managed | `triangle/web` | `^8.2` | Управляемый вариант Web; использует Engine 8, HTTP Engine 2 и View 1.1 |
+| [Web-Managed](/frameworks/web-managed) | `triangle/web` | `^8.2` | Вариант HTTP-шаблона; использует Engine 8, HTTP Engine 2 и View 1.1; package name совпадает с Web |
 | Full | `triangle/web` | `^8.2` | Шаблон приложения с интерфейсом административной панели; package name совпадает с Web, поэтому это не отдельный Composer install target |
 | WS | `triangle/ws` | `^8.2` | Engine 8.1, WS Engine 1.1, Console 1.3, Database 1, Events 1 |
 | Maestro | `triangle/maestro` | `^8.2` | Декларирует Engine `6.x-dev`; не относится к совместимой линии Engine 8 и пока остаётся прототипом |
 | Metronic | `triangle/web` | `^8.2` | Архивная сборка на Engine 5.3; не смешивайте её зависимости с актуальными Web/WS пакетами |
 
-Web, Web-Managed и Full объявляют один Composer package name. Для Web используйте `composer create-project triangle/web`; Full и Web-Managed следует рассматривать как отдельные исходные шаблоны, а не как варианты, различаемые Composer-именем.
+Web, Web-Managed и Full объявляют один Composer package name. Для Web используйте `composer create-project triangle/web`; Full и Web-Managed выбирайте как исходные шаблоны, поскольку Composer не различает эти варианты по имени пакета.
 
 ## Плагины
 

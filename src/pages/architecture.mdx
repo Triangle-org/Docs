@@ -2,9 +2,33 @@
 
 Triangle — модульный набор PHP-библиотек и приложений поверх [Localzet Server](https://github.com/localzet/Server). Server отвечает за асинхронный runtime и сетевые протоколы; Triangle добавляет контейнер, приложение, компоненты и готовые Web/WS tracks. Цель — дать альтернативную модель долгоживущих PHP-процессов; сравнение с PHP-FPM зависит от нагрузки и deployment-модели, поэтому производительность следует подтверждать воспроизводимыми измерениями.
 
+<div className="not-prose my-8 rounded-2xl border border-zinc-900/10 bg-zinc-50 p-5 dark:border-white/10 dark:bg-zinc-800/50">
+    <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4 text-center">
+        <p className="m-0 text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">Runtime · протоколы · процессы</p>
+        <p className="mb-0 mt-1 text-lg font-semibold">Localzet Server</p>
+    </div>
+    <div aria-hidden="true" className="py-2 text-center text-xl text-zinc-400">↓</div>
+    <div className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4 text-center">
+        <p className="m-0 text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">Общий bootstrap и lifecycle</p>
+        <p className="mb-0 mt-1 text-lg font-semibold">Triangle Engine</p>
+    </div>
+    <div aria-hidden="true" className="py-2 text-center text-xl text-zinc-400">↓</div>
+    <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
+            <p className="m-0 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">HTTP track</p>
+            <p className="mb-0 mt-1 font-semibold">HTTP Engine → Web</p>
+        </div>
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-center">
+            <p className="m-0 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">WebSocket track</p>
+            <p className="mb-0 mt-1 font-semibold">WS Engine → WS</p>
+        </div>
+    </div>
+    <p className="mb-0 mt-3 text-center text-sm text-zinc-600 dark:text-zinc-300">Компоненты и плагины добавляются к выбранному приложению согласно своим Composer-зависимостям.</p>
+</div>
+
 ## Два application tracks
 
-- **Web** — основной HTTP/MVC track для сайтов, API и сервисов.
+- **Web** — основной HTTP/MVC track для сайтов, API и сервисов. Web-Managed — отдельный исходный вариант с другими ограничениями зависимостей и точкой входа; Composer не различает эти варианты по package name.
 - **WS** — отдельный WebSocket-first track для приложений реального времени. Он предоставляет lifecycle WebSocket-соединений и route callbacks; межпроцессная синхронизация, reconnect и backpressure не входят в шаблон как готовые возможности.
 
 Track описывает набор пакетов и соглашений приложения; оба используют Localzet Server как нижележащий runtime. Composer manifests HTTP/WS engines явно запрещают совместную установку этих движков в одном dependency graph. Возможность запускать отдельные приложения/процессы на одном серверном deployment — другой вопрос и требует эксплуатационной проверки.

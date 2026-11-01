@@ -232,6 +232,7 @@ export const navigation = [
         title: 'Фреймворки',
         links: [
             {title: 'Web', href: '/frameworks/web'},
+            {title: 'Web-Managed', href: '/frameworks/web-managed'},
             {title: 'WS', href: '/frameworks/ws'},
             {title: 'Совместимость', href: '/compatibility'},
         ],
