@@ -16,7 +16,7 @@ export const description =
 
 ## Концепт проекта {{ anchor: false }}
 
-В основе лежит [Localzet Server](https://github.com/localzet/Server), над ним расположены Engine, компоненты, специализированные движки и приложения Web/WS. В checkout 2026-11-01 приложения декларируют PHP `^8.2`, а многие библиотеки — `^8.1`; отдельные legacy-пакеты имеют другие требования. Это описание manifests, не гарантия поддерживаемой матрицы. {{ className: 'lead' }}
+Localzet Server предоставляет асинхронный runtime и сетевые протоколы. Triangle добавляет Engine, независимо подключаемые компоненты, HTTP-движок и отдельный WebSocket-движок. Приложения Web и WS выбирают один из этих tracks; требования к PHP и зависимостям зависят от выбранного пакета и собраны в [матрице совместимости](/compatibility). {{ className: 'lead' }}
 
 <Button
     href="/install"

@@ -1,6 +1,6 @@
 # Web — HTTP-сборка
 
-`triangle/web` — приложение-шаблон HTTP-трека Triangle. В актуальном checkout оно собирает `triangle/engine`, `triangle/engine-http`, Console, Router, Middleware, Database, Session, View и Events поверх Localzet Server. Для точных Composer-ограничений см. [матрицу совместимости](/compatibility).
+`triangle/web` — приложение-шаблон HTTP-трека Triangle. Оно собирает `triangle/engine`, `triangle/engine-http`, Console, Router, Middleware, Database, Session, View и Events поверх Localzet Server. Точные требования к PHP и Composer-зависимостям приведены в [матрице совместимости](/compatibility).
 
 ## Маршрут запроса
 
@@ -45,4 +45,4 @@ Router::get('/hello/{name}', function (Request $request, string $name): Response
 
 ## Граница совместимости
 
-Web, Web-Managed и Full имеют одинаковое имя Composer-пакета `triangle/web`, но разные constraints и состав исходного шаблона. Не объединяйте их без отдельной проверки; используйте lock-файл выбранного шаблона.
+Web, Web-Managed и Full имеют одинаковое имя Composer-пакета `triangle/web`, но различаются составом и ограничениями зависимостей. Composer не различает их по package name. Для установки через `composer create-project` используйте Web; остальные варианты выбираются как исходные шаблоны.
