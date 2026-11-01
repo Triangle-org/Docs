@@ -51,18 +51,3 @@
 Не смешивайте `Engine 5/6/7/8`, `Router/Middleware 1/2` и Web/WS templates по совпадению namespace. До стабилизации release train используйте lock-файл конкретного приложения и проверяйте, что его прямые и транзитивные зависимости удовлетворяют всем constraints.
 
 Матрица остаётся снимком Composer-контрактов, пока не пройдены интеграционные проверки `Server → Engine → HTTP/WS Engine → framework`. `Pusher` остаётся незавершённым прототипом. OAuth декларирует Triangle Engine, но совместимость интеграции требует runtime-проверки.
-
-## Предложение по идентификаторам проектов
-
-Несколько независимых project checkouts сейчас объявляют `name: triangle/web`. Это не меняет runtime API, но затрудняет навигацию, отчёты зависимостей, Packagist metadata и понимание lock-файлов. Для root-проектов предлагается такая схема:
-
-| Checkout | Текущий Composer name | Предлагаемый name | Роль |
-| --- | --- | --- | --- |
-| `Web` | `triangle/web` | `triangle/web` | Канонический HTTP application template |
-| `Web-Managed` | `triangle/web` | `triangle/web-managed` | Вариант Web с управляемой конфигурацией |
-| `Full` | `triangle/web` | `triangle/full` | Панель административного интерфейса для Triangle-приложений |
-| `Maestro` | `triangle/maestro` | — | Управляющая среда для нескольких приложений; прототип |
-| `Ws` | `triangle/ws` | `triangle/ws` | WebSocket application template |
-| `Metronic` | `triangle/web` | без переименования в рамках актуального train | Архив; оставить исторические метаданные |
-
-Предложение касается только поля `name` корневых проектов `type: project`; зависимости приложений от `triangle/engine`, `triangle/engine-http` и компонентов не меняются. Перед применением к публичным репозиториям нужно проверить существующие Packagist публикации и теги, downstream-команды `composer create-project`, release automation и документационные ссылки. Если checkout используются только как шаблоны в GitHub, package name должен соответствовать фактическому способу установки, а не создавать фиктивный публикуемый пакет.
