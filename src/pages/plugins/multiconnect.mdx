@@ -1,0 +1,31 @@
+# MultiConnect — реестр соединений
+
+`triangle/multiconnect` — библиотека для Localzet Server с обработчиком `GatewayServer` и реестром соединений. Пакет требует PHP `^8.1` и Localzet Server `^4.5`; зависимости от Triangle Engine нет.
+
+```bash
+composer require triangle/multiconnect
+```
+
+Переопределите callbacks обработчика для своего протокола:
+
+```php
+<?php
+
+use localzet\Server\Connection\ConnectionInterface;
+use Triangle\MultiConnect\GatewayServer;
+
+final class EchoGateway extends GatewayServer
+{
+    protected function onClientMessage(
+        string $id,
+        ConnectionInterface $connection,
+        mixed $message,
+    ): void {
+        $this->connections()->sendToClient($id, $message);
+    }
+}
+```
+
+Зарегистрируйте класс обработчика в конфигурации процесса Localzet Server. В приложении Triangle это делается в `config/process.php`; вне Triangle используется конфигурация самого Server.
+
+`ConnectionManager` управляет ID, UID, группами и отправкой сообщений соединениям, известным текущему worker-процессу. Реестр не синхронизируется между workers или узлами. Для распределённой доставки нужен отдельный broker и собственная стратегия отказоустойчивости.
