@@ -22,7 +22,7 @@
 | Web application (`Web-Managed`) | `triangle/web` | `^8.2` | Engine 8, HTTP Engine 2, Console 1.3, Database 1, Session 1, View 1.1, Events 1, Symfony Console 7 | lock обновлён; это отдельный вариант сборки с собственными ограничениями |
 | Full (панель приложения, проект) | `triangle/web` | `^8.2` | те же основные компоненты, что `Web`, плюс отдельные assets/build tooling | Composer lock разрешён локально, но не отслеживался Git; Yarn lock не обновлён из-за недоступности npm registry. Пакетное имя совпадает с `Web` |
 | WebSocket application | `triangle/ws` | `^8.2` | Engine 8.1, WS Engine 1.1, Console 1.3, Database 1, Events 1, Symfony Console 7 | lock обновлён; WS Engine 1.1.1 |
-| Maestro (управляющая среда, проект) | `triangle/web` | `^8.2` | Engine `6.x-dev` | legacy lock; source не разрешает зависимость. Текущая конфигурация запускает несколько app listeners, но ещё не подтверждает функции reverse proxy или изоляции |
+| Maestro (управляющая среда, проект) | `triangle/maestro` | `^8.2` | Engine `6.x-dev` (не разрешается); проба Engine 8.1.11 выявила конфликт `response()` и устаревшие базовые классы | Обновление версии отложено до миграции bootstrap/helpers и Request/Response; приложение остаётся прототипом |
 | Metronic (архив) | `triangle/web` | `^8.2` | Engine 5.3, Illuminate 10 | архивное поколение; исключено из актуального release train |
 
 Плагины и legacy приложения имеют собственные требования; их нельзя автоматически считать частью текущего Web/WS train:
