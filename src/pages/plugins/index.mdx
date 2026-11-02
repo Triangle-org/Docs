@@ -18,7 +18,7 @@
 
 `triangle/multiconnect` зависит от Localzet Server и предоставляет `GatewayServer` с реестром соединений, UID и групп внутри worker-процесса. Обработчик можно зарегистрировать как endpoint Localzet Server или явно добавить в `config/process.php` Triangle-приложения. Пакет можно использовать вне Triangle; пример подключения приведён в [руководстве MultiConnect](/plugins/multiconnect).
 
-Реестр видит только соединения текущего worker-процесса. Межпроцессная и межузловая рассылка, эквивалентная GatewayWorker, требует broker-интеграции и в этот пакет не входит. См. README пакета и [матрицу совместимости](/compatibility).
+Локальный реестр видит соединения только текущего worker-процесса. Для распределённой отправки пакет содержит необязательный адаптер к `localzet/cluster`, чьи Register, Gateway и Business нужно настроить отдельно. Подробности и ограничения API — в [руководстве MultiConnect](/plugins/multiconnect) и [матрице совместимости](/compatibility).
 
 ## Установка и управление
 

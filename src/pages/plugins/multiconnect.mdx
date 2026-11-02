@@ -28,4 +28,20 @@ final class EchoGateway extends GatewayServer
 
 Зарегистрируйте класс обработчика в конфигурации процесса Localzet Server. В приложении Triangle это делается в `config/process.php`; вне Triangle используется конфигурация самого Server.
 
-`ConnectionManager` управляет ID, UID, группами и отправкой сообщений соединениям, известным текущему worker-процессу. Реестр не синхронизируется между workers или узлами. Для распределённой доставки нужен отдельный broker и собственная стратегия отказоустойчивости.
+`ConnectionManager` управляет ID, UID, группами и отправкой сообщений соединениям текущего worker-процесса. Этот реестр не синхронизируется между workers или узлами.
+
+## Распределённая доставка
+
+Для отправки между процессами или узлами установите необязательный пакет `localzet/cluster` и настройте его процессы Register, Gateway и Business. MultiConnect предоставляет адаптер к публичному клиентскому API Cluster и не реализует собственный транспорт:
+
+```php
+use Triangle\MultiConnect\ClusterConnectionManager;
+
+$connections = new ClusterConnectionManager();
+$connections->sendToUid('user-42', ['event' => 'notice', 'text' => 'Готово']);
+$connections->sendToGroup('room-7', ['event' => 'message', 'text' => 'Привет']);
+```
+
+Секреты и адреса внутренних процессов Cluster задаются в его конфигурации. Отправки в UID, группу и всем клиентам не возвращают число получателей; `sendToClient()` возвращает результат вызова Cluster. Cluster требует PHP `^8.2`, тогда как базовый MultiConnect работает с PHP `^8.1` без этой зависимости.
+
+Локальный `ConnectionManager` остаётся ограничен одним worker-процессом. Используйте один механизм индексации соединений для каждой операции: UID/группы в Cluster не синхронизируются с локальным реестром MultiConnect.

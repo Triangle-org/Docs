@@ -39,7 +39,7 @@ Web, Web-Managed и Full объявляют один Composer package name. Дл
 | `triangle/oauth` | `^8.2`, Localzet HTTP 2, Engine 8.1, `ext-mbstring`, `ext-json`, `ext-curl` | Провайдерные возможности могут требовать дополнительные расширения или пакеты; проверяйте нужный provider отдельно |
 | `triangle/media` | `^8.1`, Engine 8.1, `ext-imagick` | Требует установленный PHP Imagick extension |
 | `triangle/pusher` | `^8.1`, Engine 8.1, Router 2 | Прототип; конфигурация отключена по умолчанию, полноценная обработка push-событий не реализована |
-| `triangle/multiconnect` | `^8.1`, Localzet Server `^4.5` | Handler и реестр соединений работают в пределах одного worker-процесса; межпроцессный broker и распределённая рассылка не входят в пакет |
+| `triangle/multiconnect` | `^8.1`, Localzet Server `^4.5`; optional `localzet/cluster` (`^8.2` PHP) | Базовый реестр ограничен worker-процессом. Дополнительный адаптер передаёт распределённые операции в Localzet Cluster; его процессы настраиваются отдельно, UID/group/broadcast не возвращают число получателей |
 
 ## Как читать ограничения
 
