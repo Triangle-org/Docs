@@ -1,7 +1,7 @@
 import {mdxAnnotations} from 'mdx-annotations'
 import {visit} from 'unist-util-visit'
 import rehypeMdxTitle from 'rehype-mdx-title'
-import shiki from 'shiki'
+import {createCssVariablesTheme, getSingletonHighlighter} from 'shiki'
 import {toString} from 'mdast-util-to-string'
 import * as acorn from 'acorn'
 import {slugifyWithCounter} from '@sindresorhus/slugify'
@@ -23,29 +23,51 @@ let highlighter
 
 function rehypeShiki() {
     return async (tree) => {
-        highlighter =
-            highlighter ?? (await shiki.getHighlighter({theme: 'css-variables'}))
+        highlighter ??= await getSingletonHighlighter({
+            themes: [createCssVariablesTheme()],
+            langs: ['bash', 'javascript', 'php'],
+        })
 
         visit(tree, 'element', (node) => {
             if (node.tagName === 'pre' && node.children[0]?.tagName === 'code') {
                 let codeNode = node.children[0]
                 let textNode = codeNode.children[0]
+                let source = textNode?.value ?? ''
 
-                node.properties.code = textNode.value
+                node.properties.code = source
 
                 if (node.properties.language) {
-                    let tokens = highlighter.codeToThemedTokens(
-                        textNode.value,
-                        node.properties.language
-                    )
-
-                    textNode.value = shiki.renderToHtml(tokens, {
-                        elements: {
-                            pre: ({children}) => children,
-                            code: ({children}) => children,
-                            line: ({children}) => `<span>${children}</span>`,
-                        },
+                    let {tokens} = highlighter.codeToTokens(source, {
+                        lang: node.properties.language,
+                        theme: 'css-variables',
                     })
+
+                    textNode.value = tokens
+                        .map((line) => {
+                            let content = line
+                                .map((token) => {
+                                    let escaped = token.content.replace(/[&<>"']/g, (char) => ({
+                                        '&': '&amp;',
+                                        '<': '&lt;',
+                                        '>': '&gt;',
+                                        '"': '&quot;',
+                                        "'": '&#39;',
+                                    })[char])
+                                    let styles = []
+                                    if (token.color) styles.push(`color:${token.color}`)
+                                    if (token.fontStyle & 1) styles.push('font-style:italic')
+                                    if (token.fontStyle & 2) styles.push('font-weight:700')
+                                    if (token.fontStyle & 4) styles.push('text-decoration:underline')
+                                    if (token.fontStyle & 8) styles.push('text-decoration:line-through')
+                                    return styles.length
+                                        ? `<span style="${styles.join(';')}">${escaped}</span>`
+                                        : escaped
+                                })
+                                .join('')
+
+                            return `<span>${content || ' '}</span>`
+                        })
+                        .join('\n')
                 }
             }
         })

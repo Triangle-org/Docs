@@ -1,4 +1,4 @@
-import {useRef} from 'react'
+import {useState} from 'react'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
 import clsx from 'clsx'
@@ -9,7 +9,7 @@ import {Tag} from '@/components/Tag'
 import {remToPx} from '@/lib/remToPx'
 
 function useInitialValue(value, condition = true) {
-    let initialValue = useRef(value).current
+    let [initialValue] = useState(value)
     return condition ? initialValue : value
 }
 

@@ -1,10 +1,31 @@
-import {forwardRef, Fragment, useEffect, useId, useRef, useState} from 'react'
+import {
+    forwardRef,
+    Fragment,
+    useEffect,
+    useId,
+    useRef,
+    useState,
+    useSyncExternalStore,
+} from 'react'
 import {useRouter} from 'next/router'
 import {createAutocomplete} from '@algolia/autocomplete-core'
 import {Dialog, Transition} from '@headlessui/react'
 import clsx from 'clsx'
 import {navigation} from '@/components/Navigation'
 import Highlighter from 'react-highlight-words'
+
+function subscribeToPlatform() {
+    return () => {}
+}
+
+function getModifierKey() {
+    let platform = navigator.userAgentData?.platform || navigator.platform
+    return /(Mac|iPhone|iPod|iPad)/i.test(platform) ? '⌘' : 'Ctrl '
+}
+
+function useModifierKey() {
+    return useSyncExternalStore(subscribeToPlatform, getModifierKey, () => 'Ctrl ')
+}
 
 function useAutocomplete() {
     let id = useId()
@@ -244,13 +265,7 @@ const SearchInput = forwardRef(function SearchInput(
 })
 
 function SearchButton(props) {
-    let [modifierKey, setModifierKey] = useState()
-
-    useEffect(() => {
-        setModifierKey(
-            /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? '⌘' : 'Ctrl '
-        )
-    }, [])
+    let modifierKey = useModifierKey()
 
     return (
         <>
@@ -284,6 +299,7 @@ function SearchDialog({open, setOpen, className}) {
     let panelRef = useRef()
     let inputRef = useRef()
     let {autocomplete, autocompleteState} = useAutocomplete()
+    let formProps = autocomplete.getFormProps({})
 
     useEffect(() => {
         if (!open) {
@@ -359,9 +375,21 @@ function SearchDialog({open, setOpen, className}) {
                             <div {...autocomplete.getRootProps({})}>
                                 <form
                                     ref={formRef}
-                                    {...autocomplete.getFormProps({
-                                        inputElement: inputRef.current,
-                                    })}
+                                    {...formProps}
+                                    onSubmit={(event) =>
+                                        autocomplete
+                                            .getFormProps({
+                                                inputElement: event.currentTarget.querySelector('input'),
+                                            })
+                                            .onSubmit(event)
+                                    }
+                                    onReset={(event) =>
+                                        autocomplete
+                                            .getFormProps({
+                                                inputElement: event.currentTarget.querySelector('input'),
+                                            })
+                                            .onReset(event)
+                                    }
                                 >
                                     <SearchInput
                                         ref={inputRef}
@@ -416,14 +444,8 @@ function useSearchProps() {
 }
 
 export function Search() {
-    let [modifierKey, setModifierKey] = useState()
+    let modifierKey = useModifierKey()
     let {buttonProps, dialogProps} = useSearchProps()
-
-    useEffect(() => {
-        setModifierKey(
-            /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? '⌘' : 'Ctrl '
-        )
-    }, [])
 
     return (
         <div className="hidden lg:block lg:max-w-md lg:flex-auto">

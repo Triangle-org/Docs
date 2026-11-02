@@ -44,7 +44,7 @@ function extractSections() {
     }
 }
 
-export default function (nextConfig = {}) {
+export default function withMdxSearch(nextConfig = {}) {
     let cache = new Map()
 
     return Object.assign({}, nextConfig, {
