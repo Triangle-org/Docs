@@ -17,6 +17,8 @@
 | Cron | `triangle/cron` | `^8.1` | Engine 8.1, Events 1, Localzet Cron 1 |
 | Console | `triangle/console` | `^8.2` | Engine 8.1, Localzet Console 1.1, Symfony Console и Process 7.1 |
 
+В lock-файлах Web, WS, Full и Web-Managed сейчас разрешены `triangle/console 1.3.27` и `localzet/console 1.1.9`. В этих сборках Symfony Clock/String зафиксированы на 7.4.21/7.4.22: эта ветка поддерживает минимальный PHP 8.2, заявленный шаблонами.
+
 ## Приложения и шаблоны
 
 | Приложение | Composer package | PHP | Состав |
@@ -43,6 +45,7 @@ Web, Web-Managed и Full объявляют один Composer package name. Дл
 
 - Composer constraint сообщает, какие версии пакет разрешает установить; он сам по себе не подтверждает совместимость поведения.
 - `^8.1` для PHP означает диапазон от 8.1 до следующего major-релиза, а не обещание работы на любой конфигурации PHP.
+- Package checks разрешают зависимости на заявленной минимальной версии PHP и проверяют установку, синтаксис и тесты, объявленные конкретным пакетом. Это не заменяет интеграционную проверку совместной сборки и runtime-сценариев.
 - Не устанавливайте `triangle/engine-http` и `triangle/engine-ws` в один dependency graph: manifests объявляют взаимный конфликт.
 - Некоторые библиотеки объявляют `triangle/engine` прямой зависимостью. Их можно применять вне готовых Web/WS шаблонов, но для standalone-сценария нужно учитывать этот контракт.
 - Совместимость Maestro с Engine 8 не заявлена. Перед выбором пакета также проверьте документацию [Web](/frameworks/web), [WS](/frameworks/ws) и [плагинов](/plugins).
