@@ -45,4 +45,4 @@ Router::get('/hello/{name}', function (Request $request, string $name): Response
 
 ## Граница совместимости
 
-Web, Web-Managed и Full имеют одинаковое имя Composer-пакета `triangle/web`, но различаются составом и ограничениями зависимостей. Composer не различает их по package name. Для установки через `composer create-project` используйте Web; остальные варианты выбираются как исходные шаблоны.
+Web использует `triangle/web`, Web-Managed — `triangle/web-managed`, а административный шаблон Full — `triangle/full`. Каждый вариант имеет отдельное имя Composer-пакета; доступность установки зависит от публикации соответствующего пакета.
